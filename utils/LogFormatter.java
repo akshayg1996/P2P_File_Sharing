@@ -14,11 +14,12 @@ public class LogFormatter extends Formatter {
     }
 
     public static String getFormattedMessage(String message) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(dateTimeFormatter.format(LocalDateTime.now()));
         sb.append(": ");
         sb.append("Peer ");
         sb.append(message);
+        sb.append("\n");
         return sb.toString();
     }
 }

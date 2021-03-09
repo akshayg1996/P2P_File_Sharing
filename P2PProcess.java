@@ -1,25 +1,32 @@
+import handlers.PeerMessageHandler;
 import models.CommonConfiguration;
 import models.RemotePeerDetails;
-import utils.LogFormatter;
+import utils.LogHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static utils.LogFormatter.getFormattedMessage;
+import static utils.LogHelper.logAndShowInConsole;
 
 public class P2PProcess {
-    public static Logger log = Logger.getLogger(P2PProcess.class.getName());
-    public FileHandler fileHandler;
     public static String currentPeerID;
+    public int peerIndex;
+    public Thread listeningThread;
 
-    public static volatile HashMap<String, RemotePeerDetails> remotePeerDetailsMap = new HashMap();
-    public static volatile HashMap<String, RemotePeerDetails> preferredNeighboursMap = new HashMap();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> remotePeerDetailsMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> preferredNeighboursMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> unchokedNeighboursMap = new ConcurrentHashMap();
+
+    public static Vector<Thread> receivingThread = new Vector<Thread>();
 
     public static void main(String[] args) {
         P2PProcess process = new P2PProcess();
@@ -27,7 +34,8 @@ public class P2PProcess {
 
         try {
             //initialize logger and show started message in log file and console
-            process.initializeLogger();
+            LogHelper logHelper = new LogHelper();
+            logHelper.initializeLogger(currentPeerID);
             logAndShowInConsole(currentPeerID + " is started");
 
             //read Common.cfg
@@ -39,11 +47,54 @@ public class P2PProcess {
             //initialize preferred neighbours
             initializePreferredNeighbours();
 
+            boolean isFirstPeer = false;
+            Enumeration<String> peerKeys = remotePeerDetailsMap.keys();
+
+            if (isFirstPeer) {
+
+            }
+            else {
+                createNewFile();
+
+                Set<String> remotePeerDetailsKeys = remotePeerDetailsMap.keySet();
+                for (String peerID : remotePeerDetailsKeys) {
+                    RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
+
+                    if (process.peerIndex > remotePeerDetails.getIndex()) {
+                        Thread tempThread = new Thread(new PeerMessageHandler(
+                                remotePeerDetails.getHostAddress(), Integer
+                                .parseInt(remotePeerDetails.getPort()), 1,
+                                peerID));
+                        receivingThread.add(tempThread);
+                        tempThread.start();
+                    }
+                }
+            }
+
 
         } catch (Exception e) {
             System.out.println("Error occured while running peer process - " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static void createNewFile() {
+        try {
+            File dir = new File(currentPeerID);
+            dir.mkdir();
+
+            File newfile = new File(currentPeerID, CommonConfiguration.fileName);
+            OutputStream os = new FileOutputStream(newfile, true);
+            byte b = 0;
+
+            for (int i = 0; i < CommonConfiguration.fileSize; i++)
+                os.write(b);
+            os.close();
+        } catch (Exception e) {
+            logAndShowInConsole(currentPeerID + " ERROR in creating the file : " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 
     public static void initializePreferredNeighbours() {
@@ -92,23 +143,6 @@ public class P2PProcess {
         } catch (IOException e) {
             logAndShowInConsole("Error occured while reading common configuration - " + e.getMessage());
             throw e;
-        }
-    }
-
-    public static void logAndShowInConsole(String message) {
-        log.info(message);
-        System.out.println(getFormattedMessage(message));
-    }
-
-    public void initializeLogger() {
-        try {
-            fileHandler = new FileHandler("log_peer_" + currentPeerID + ".log");
-            fileHandler.setFormatter(new LogFormatter());
-            log.addHandler(fileHandler);
-            log.setUseParentHandlers(false);
-        } catch (IOException e) {
-            System.out.println("Error occured while creating log file - " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

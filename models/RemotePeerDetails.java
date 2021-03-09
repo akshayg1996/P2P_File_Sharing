@@ -2,14 +2,14 @@ package models;
 
 public class RemotePeerDetails {
     private String id;
-    private String address;
+    private String hostAddress;
     private String port;
     private int hasFile;
     private int index;
 
-    public RemotePeerDetails(String id, String address, String port, int hasFile, int index) {
+    public RemotePeerDetails(String id, String hostAddress, String port, int hasFile, int index) {
         this.id = id;
-        this.address = address;
+        this.hostAddress = hostAddress;
         this.port = port;
         this.hasFile = hasFile;
         this.index = index;
@@ -23,12 +23,12 @@ public class RemotePeerDetails {
         this.id = id;
     }
 
-    public String getAddress() {
-        return address;
+    public String getHostAddress() {
+        return hostAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setHostAddress(String hostAddress) {
+        this.hostAddress = hostAddress;
     }
 
     public String getPort() {
