@@ -37,4 +37,8 @@ public class MessageConstants {
 
     public static final int PIECE_INDEX_LENGTH = 4;
 
+    public static final int ACTIVE_CONNECTION = 1;
+
+    public static final int PASSIVE_CONNECTION = 0;
+
 }

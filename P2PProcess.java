@@ -21,12 +21,12 @@ public class P2PProcess {
     public static int currentPeerHasFile;
     public static BitFieldMessage bitFieldMessage = null;
     public static Thread messageProcessor;
+    public static Vector<Thread> peerThreads = new Vector();
+    public static Vector<Thread> serverThreads = new Vector();
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> remotePeerDetailsMap = new ConcurrentHashMap();
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> preferredNeighboursMap = new ConcurrentHashMap();
     public static volatile ConcurrentHashMap<String, Socket> peerToSocketMap = new ConcurrentHashMap();
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> unchokedNeighboursMap = new ConcurrentHashMap();
-
-    public static Vector<Thread> receivingThread = new Vector<Thread>();
 
     public static void main(String[] args) {
         P2PProcess process = new P2PProcess();
@@ -96,13 +96,13 @@ public class P2PProcess {
                                 remotePeerDetails.getHostAddress(), Integer
                                 .parseInt(remotePeerDetails.getPort()), 1,
                                 peerID));
-                        receivingThread.add(tempThread);
+                        peerThreads.add(tempThread);
                         tempThread.start();
                     }
                 }
             }
 
-            
+
 
 
         } catch (Exception e) {
