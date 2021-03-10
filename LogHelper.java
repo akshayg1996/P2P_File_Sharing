@@ -1,12 +1,6 @@
-package utils;
-
-import handlers.PeerMessageHandler;
-
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
-import static utils.LogFormatter.getFormattedMessage;
 
 public class LogHelper {
     public FileHandler fileHandler;
@@ -27,7 +21,7 @@ public class LogHelper {
 
     public static void logAndShowInConsole(String message) {
         log.info(message);
-        System.out.println(getFormattedMessage(message));
+        System.out.println(LogFormatter.getFormattedMessage(message));
     }
 
 }

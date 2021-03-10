@@ -1,12 +1,6 @@
-package handlers;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
-
-import static utils.LogFormatter.getFormattedMessage;
-import static utils.LogHelper.logAndShowInConsole;
 
 public class PeerMessageHandler implements Runnable
 {
@@ -24,11 +18,11 @@ public class PeerMessageHandler implements Runnable
         }
         catch (UnknownHostException e)
         {
-            logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
+            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
         }
         catch (IOException e)
         {
-            logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
+            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
         }
         this.connType = connType;
 
@@ -39,7 +33,7 @@ public class PeerMessageHandler implements Runnable
         }
         catch (Exception ex)
         {
-            logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + ex.getMessage());
+            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + ex.getMessage());
         }
     }
 

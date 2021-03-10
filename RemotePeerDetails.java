@@ -1,11 +1,14 @@
-package models;
-
 public class RemotePeerDetails {
     private String id;
     private String hostAddress;
     private String port;
     private int hasFile;
     private int index;
+    private int peerState;
+    private BitFieldMessage bitFieldMessage;
+    public int isInterested;
+    public int isHandShaked;
+    public int isChoked;
 
     public RemotePeerDetails(String id, String hostAddress, String port, int hasFile, int index) {
         this.id = id;
@@ -53,5 +56,45 @@ public class RemotePeerDetails {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public int getPeerState() {
+        return peerState;
+    }
+
+    public void setPeerState(int peerState) {
+        this.peerState = peerState;
+    }
+
+    public BitFieldMessage getBitFieldMessage() {
+        return bitFieldMessage;
+    }
+
+    public void setBitFieldMessage(BitFieldMessage bitFieldMessage) {
+        this.bitFieldMessage = bitFieldMessage;
+    }
+
+    public int getIsInterested() {
+        return isInterested;
+    }
+
+    public void setIsInterested(int isInterested) {
+        this.isInterested = isInterested;
+    }
+
+    public int getIsHandShaked() {
+        return isHandShaked;
+    }
+
+    public void setIsHandShaked(int isHandShaked) {
+        this.isHandShaked = isHandShaked;
+    }
+
+    public int getIsChoked() {
+        return isChoked;
+    }
+
+    public void setIsChoked(int isChoked) {
+        this.isChoked = isChoked;
     }
 }

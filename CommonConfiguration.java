@@ -1,5 +1,3 @@
-package models;
-
 public class CommonConfiguration {
     public static int numberOfPreferredNeighbours;
     public static int unchockingInterval;

@@ -1,29 +1,29 @@
-import handlers.PeerMessageHandler;
-import models.CommonConfiguration;
-import models.RemotePeerDetails;
-import utils.LogHelper;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static utils.LogHelper.logAndShowInConsole;
-
 public class P2PProcess {
+    public Thread serverThread;
+    public ServerSocket serverSocket = null;
     public static String currentPeerID;
-    public int peerIndex;
-    public Thread listeningThread;
-
+    public static int peerIndex;
+    public static int currentPeerPort;
+    public static int currentPeerHasFile;
+    public static BitFieldMessage bitFieldMessage = null;
+    public static Thread messageProcessor;
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> remotePeerDetailsMap = new ConcurrentHashMap();
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> preferredNeighboursMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, Socket> peerToSocketMap = new ConcurrentHashMap();
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> unchokedNeighboursMap = new ConcurrentHashMap();
 
     public static Vector<Thread> receivingThread = new Vector<Thread>();
@@ -36,7 +36,7 @@ public class P2PProcess {
             //initialize logger and show started message in log file and console
             LogHelper logHelper = new LogHelper();
             logHelper.initializeLogger(currentPeerID);
-            logAndShowInConsole(currentPeerID + " is started");
+            LogHelper.logAndShowInConsole(currentPeerID + " is started");
 
             //read Common.cfg
             readCommonConfiguration();
@@ -48,12 +48,43 @@ public class P2PProcess {
             initializePreferredNeighbours();
 
             boolean isFirstPeer = false;
-            Enumeration<String> peerKeys = remotePeerDetailsMap.keys();
+            Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
+
+            for (String peerID : remotePeerIDs) {
+                RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
+                if (remotePeerDetails.getId().equals(currentPeerID)) {
+                    process.currentPeerPort = Integer.parseInt(remotePeerDetails.getPort());
+                    process.peerIndex = remotePeerDetails.getIndex();
+                    if (remotePeerDetails.getHasFile() == 1) {
+                        isFirstPeer = true;
+                        currentPeerHasFile = remotePeerDetails.getHasFile();
+                        break;
+                    }
+                }
+            }
+
+            //initialize bit field message
+            bitFieldMessage = new BitFieldMessage();
+            bitFieldMessage.setPieceDetails(currentPeerID, currentPeerHasFile);
+
+            messageProcessor = new Thread(new PeerMessageProcessingHandler());
+            messageProcessor.start();
 
             if (isFirstPeer) {
-
-            }
-            else {
+                try {
+                    process.serverSocket = new ServerSocket(currentPeerPort);
+                    process.serverThread = new Thread(new PeerServerHandler(process.serverSocket, currentPeerID));
+                    process.serverThread.start();
+                } catch (SocketTimeoutException e) {
+                    logAndShowInConsole(currentPeerID + " Socket Gets Timed out Error - " + e.getMessage());
+                    e.printStackTrace();
+                    System.exit(0);
+                } catch (IOException e) {
+                    logAndShowInConsole(currentPeerID + " Error Occured while starting server Thread - " + e.getMessage());
+                    e.printStackTrace();
+                    System.exit(0);
+                }
+            } else {
                 createNewFile();
 
                 Set<String> remotePeerDetailsKeys = remotePeerDetailsMap.keySet();
@@ -70,6 +101,8 @@ public class P2PProcess {
                     }
                 }
             }
+
+            
 
 
         } catch (Exception e) {
@@ -144,5 +177,9 @@ public class P2PProcess {
             logAndShowInConsole("Error occured while reading common configuration - " + e.getMessage());
             throw e;
         }
+    }
+
+    private static void logAndShowInConsole(String message) {
+        LogHelper.logAndShowInConsole(message);
     }
 }
