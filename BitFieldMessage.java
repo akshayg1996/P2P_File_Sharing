@@ -9,8 +9,8 @@ public class BitFieldMessage {
         numberOfPieces = (int) Math.ceil(fileSize / pieceSize);
         filePieces = new FilePiece[numberOfPieces];
 
-        for (FilePiece filePiece : filePieces) {
-            filePiece = new FilePiece();
+        for(int i=0; i< numberOfPieces; i++) {
+            filePieces[i] = new FilePiece();
         }
     }
 
