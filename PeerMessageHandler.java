@@ -120,8 +120,51 @@ public class PeerMessageHandler implements Runnable {
                 while (true) {
                     socketInputStream.read(handShakeMessageInBytes);
                     handshakeMessage = HandshakeMessage.convertBytesToHandshakeMessage(handShakeMessageInBytes);
-
+                    if (handshakeMessage.getHeader().equals(MessageConstants.HANDSHAKE_HEADER)) {
+                        remotePeerId = handshakeMessage.getPeerID();
+                        logAndShowInConsole(ownPeerId + " makes a connection to Peer " + remotePeerId);
+                        logAndShowInConsole(ownPeerId + " Received a HANDSHAKE message from Peer " + remotePeerId);
+                        //populate peerID to socket mapping
+                        P2PProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
+                        break;
+                    } else
+                        continue;
                 }
+
+                // Sending BitField...
+                Message d = new Message(MessageConstants.MESSAGE_BITFIELD, P2PProcess.bitFieldMessage.getBytes());
+                byte[] b = Message.convertMessageToByteArray(d);
+                socketOutputStream.write(b);
+                P2PProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(8);
+            }
+
+            //Passive connection
+            else {
+                while (true) {
+                    socketInputStream.read(handShakeMessageInBytes);
+                    handshakeMessage = HandshakeMessage.convertBytesToHandshakeMessage(handShakeMessageInBytes);
+                    if (handshakeMessage.getHeader().equals(MessageConstants.HANDSHAKE_HEADER)) {
+                        remotePeerId = handshakeMessage.getPeerID();
+
+                        logAndShowInConsole(ownPeerId + " makes a connection to Peer " + remotePeerId);
+                        logAndShowInConsole(ownPeerId + " Received a HANDSHAKE message from Peer " + remotePeerId);
+
+                        //populate peerID to socket mapping
+                        P2PProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                if (handShakeMessageSent()) {
+                    logAndShowInConsole(ownPeerId + " HANDSHAKE message has been sent successfully.");
+
+                } else {
+                    logAndShowInConsole(ownPeerId + " HANDSHAKE message sending failed.");
+                    System.exit(0);
+                }
+
+                P2PProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(2);
             }
 
             while (true) {
@@ -140,6 +183,7 @@ public class PeerMessageHandler implements Runnable {
                     MessageQueue.addMessageToMessageQueue(messageDetails);
                 }
             }
+
         } catch (Exception e) {
             logAndShowInConsole(ownPeerId + " Error occured while running process - " + e.getMessage());
             e.printStackTrace();

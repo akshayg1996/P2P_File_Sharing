@@ -71,19 +71,7 @@ public class P2PProcess {
             messageProcessor.start();
 
             if (isFirstPeer) {
-                try {
-                    process.serverSocket = new ServerSocket(currentPeerPort);
-                    process.serverThread = new Thread(new PeerServerHandler(process.serverSocket, currentPeerID));
-                    process.serverThread.start();
-                } catch (SocketTimeoutException e) {
-                    logAndShowInConsole(currentPeerID + " Socket Gets Timed out Error - " + e.getMessage());
-                    e.printStackTrace();
-                    System.exit(0);
-                } catch (IOException e) {
-                    logAndShowInConsole(currentPeerID + " Error Occured while starting server Thread - " + e.getMessage());
-                    e.printStackTrace();
-                    System.exit(0);
-                }
+                startMessageProcessingThread(process);
             } else {
                 createNewFile();
 
@@ -100,14 +88,29 @@ public class P2PProcess {
                         tempThread.start();
                     }
                 }
+                startMessageProcessingThread(process);
             }
-
-
-
 
         } catch (Exception e) {
             System.out.println("Error occured while running peer process - " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public static void startMessageProcessingThread(P2PProcess process)
+    {
+        try {
+            process.serverSocket = new ServerSocket(currentPeerPort);
+            process.serverThread = new Thread(new PeerServerHandler(process.serverSocket, currentPeerID));
+            process.serverThread.start();
+        } catch (SocketTimeoutException e) {
+            logAndShowInConsole(currentPeerID + " Socket Gets Timed out Error - " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
+        } catch (IOException e) {
+            logAndShowInConsole(currentPeerID + " Error Occured while starting server Thread - " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 
