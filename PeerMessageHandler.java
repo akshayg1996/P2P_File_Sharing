@@ -107,7 +107,7 @@ public class PeerMessageHandler implements Runnable {
         byte[] handShakeMessageInBytes = new byte[32];
         byte[] dataBufferWithoutPayload = new byte[MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE];
         byte[] messageLengthInBytes;
-        byte[] messageType;
+        byte[] messageTypeInBytes;
         MessageDetails messageDetails = new MessageDetails();
         try {
             if (connType == MessageConstants.ACTIVE_CONNECTION) {
@@ -121,6 +121,23 @@ public class PeerMessageHandler implements Runnable {
                     socketInputStream.read(handShakeMessageInBytes);
                     handshakeMessage = HandshakeMessage.convertBytesToHandshakeMessage(handShakeMessageInBytes);
 
+                }
+            }
+
+            while (true) {
+                int headerBytes = socketInputStream.read(dataBufferWithoutPayload);
+                messageLengthInBytes = new byte[MessageConstants.HANDSHAKE_MESSAGE_LENGTH];
+                messageTypeInBytes = new byte[MessageConstants.MESSAGE_TYPE];
+                System.arraycopy(dataBufferWithoutPayload, 0, messageLengthInBytes, 0, MessageConstants.HANDSHAKE_MESSAGE_LENGTH);
+                System.arraycopy(dataBufferWithoutPayload, MessageConstants.HANDSHAKE_MESSAGE_LENGTH, messageTypeInBytes, 0, MessageConstants.MESSAGE_TYPE);
+                Message message = new Message();
+                message.setLengthInBytes(messageLengthInBytes);
+                message.setTypeInBytes(messageTypeInBytes);
+                String messageType = message.getType();
+                if(messageType.equals(MessageConstants.MESSAGE_INTERESTED) || messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED)) {
+                    messageDetails.setMessage(message);
+                    messageDetails.setFromPeerID(remotePeerId);
+                    MessageQueue.addMessageToMessageQueue(messageDetails);
                 }
             }
         } catch (Exception e) {
