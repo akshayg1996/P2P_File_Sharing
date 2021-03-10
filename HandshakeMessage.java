@@ -61,14 +61,25 @@ public class HandshakeMessage {
         HandshakeMessage message = null;
 
         try {
-          if(handShakeMessage.length != MessageConstants.HANDSHAKE_MESSAGE_LENGTH)
-              throw new Exception("While Decoding Handshake message length is invalid");
-          message = new HandshakeMessage();
+            if (handShakeMessage.length != MessageConstants.HANDSHAKE_MESSAGE_LENGTH)
+                throw new Exception("While Decoding Handshake message length is invalid");
+            message = new HandshakeMessage();
+            byte[] messageHeader = new byte[MessageConstants.HANDSHAKE_HEADER_LENGTH];
+            byte[] messagePeerID = new byte[MessageConstants.HANDSHAKE_PEERID_LENGTH];
 
-        }catch (Exception e) {
+            System.arraycopy(handShakeMessage, 0, messageHeader, 0,
+                    MessageConstants.HANDSHAKE_HEADER_LENGTH);
+            System.arraycopy(handShakeMessage, MessageConstants.HANDSHAKE_HEADER_LENGTH
+                            + MessageConstants.HANDSHAKE_ZEROBITS_LENGTH, messagePeerID, 0,
+                    MessageConstants.HANDSHAKE_PEERID_LENGTH);
 
+            message.setHeaderInBytes(messageHeader);
+            message.setPeerIDInBytes(messagePeerID);
+
+        } catch (Exception e) {
+            logAndShowInConsole("Error Occured while converting bytes to handshake message - " + e.getMessage());
+            e.printStackTrace();
         }
-
         return message;
     }
 
