@@ -1,6 +1,10 @@
 # Computer Networks Course (CNT 5106C) Project 
 ### P2P File Sharing
 
+- Implement BitTorrent protocol to construct a P2P file-sharing application in Java. 
+- Distribute files with choking and unchoking mechanism between peers. 
+- Establishing all operations using reliable protocol TCP.
+
 Project Members:
 1. Riyaz Shaik (UFID: 4360 - 0170)
 2. Akshay Ganapathy (UFID: 3684 - 6922)
