@@ -39,13 +39,13 @@ public class peerProcess {
             LogHelper.logAndShowInConsole(currentPeerID + " is started");
 
             //read Common.cfg
-            readCommonConfiguration();
+            initializePeerConfiguration();
 
             //read Peerinfo.cfg
-            readPeerConfiguration();
+            addOtherPeerDetails();
 
             //initialize preferred neighbours
-            initializePreferredNeighbours();
+            setPreferredNeighbours();
 
             boolean isFirstPeer = false;
             Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
@@ -133,7 +133,7 @@ public class peerProcess {
 
     }
 
-    public static void initializePreferredNeighbours() {
+    public static void setPreferredNeighbours() {
         Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
         for (String peerID : remotePeerIDs) {
             RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
@@ -143,7 +143,7 @@ public class peerProcess {
         }
     }
 
-    public static void readPeerConfiguration() throws IOException {
+    public static void addOtherPeerDetails() throws IOException {
         try {
             List<String> lines = Files.readAllLines(Paths.get("PeerInfo.cfg"));
             for (int i = 0; i < lines.size(); i++) {
@@ -157,7 +157,7 @@ public class peerProcess {
         }
     }
 
-    public static void readCommonConfiguration() throws IOException {
+    public static void initializePeerConfiguration() throws IOException {
         try {
             List<String> lines = Files.readAllLines(Paths.get("Common.cfg"));
             for (String line : lines) {

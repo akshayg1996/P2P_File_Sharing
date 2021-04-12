@@ -17,7 +17,7 @@ Steps to Run the project:
 2. For linux run compile-and-run-project-linux.sh script
 
 To Run process locally in intellij:
-1. Go to P2PProcess class and run main method
-2. Open P2PProcess configuration and in program arguments add some peer id 
-   and run P2PProcess configuration
+1. Go to peerProcess class and run main method
+2. Open peerProcess configuration and in program arguments add some peer id 
+   and run peerProcess configuration
 

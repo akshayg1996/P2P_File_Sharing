@@ -125,17 +125,17 @@ public class PeerMessageHandler implements Runnable {
                         logAndShowInConsole(ownPeerId + " makes a connection to Peer " + remotePeerId);
                         logAndShowInConsole(ownPeerId + " Received a HANDSHAKE message from Peer " + remotePeerId);
                         //populate peerID to socket mapping
-                        P2PProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
+                        peerProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
                         break;
                     } else
                         continue;
                 }
 
                 // Sending BitField...
-                Message d = new Message(MessageConstants.MESSAGE_BITFIELD, P2PProcess.bitFieldMessage.getBytes());
+                Message d = new Message(MessageConstants.MESSAGE_BITFIELD, peerProcess.bitFieldMessage.getBytes());
                 byte[] b = Message.convertMessageToByteArray(d);
                 socketOutputStream.write(b);
-                P2PProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(8);
+                peerProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(8);
             }
 
             //Passive connection
@@ -150,7 +150,7 @@ public class PeerMessageHandler implements Runnable {
                         logAndShowInConsole(ownPeerId + " Received a HANDSHAKE message from Peer " + remotePeerId);
 
                         //populate peerID to socket mapping
-                        P2PProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
+                        peerProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
                         break;
                     } else {
                         continue;
@@ -164,7 +164,7 @@ public class PeerMessageHandler implements Runnable {
                     System.exit(0);
                 }
 
-                P2PProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(2);
+                peerProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(2);
             }
 
             while (true) {

@@ -21,7 +21,7 @@ public class PeerServerHandler implements Runnable {
                 otherPeerSocket = serverSocket.accept();
                 otherPeerThread = new Thread(new PeerMessageHandler(otherPeerSocket, 0, peerID));
                 logAndShowInConsole(peerID + " Connection is Established");
-                P2PProcess.serverThreads.add(otherPeerThread);
+                peerProcess.serverThreads.add(otherPeerThread);
                 otherPeerThread.start();
             }catch (IOException e) {
                 logAndShowInConsole(peerID + " Error Occured while Accepting Socket Connection - " + e.getMessage());

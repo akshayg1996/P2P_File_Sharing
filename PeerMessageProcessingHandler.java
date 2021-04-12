@@ -30,59 +30,59 @@ public class PeerMessageProcessingHandler implements Runnable {
 
         String messageType = messageDetails.getMessage().getType();
         String remotePeerID = messageDetails.getFromPeerID();
-        int peerState = P2PProcess.remotePeerDetailsMap.get(remotePeerID).getPeerState();
+        int peerState = peerProcess.remotePeerDetailsMap.get(remotePeerID).getPeerState();
 
         if (messageType.equals(MessageConstants.MESSAGE_HAVE) && peerState != 14) {
             logAndShowInConsole(currentPeerID + " received HAVE message from Peer " + remotePeerID);
             if (isPeerInterested(messageDetails.getMessage(), remotePeerID)) {
-                sendInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
+                sendInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
             } else {
-                sendNotInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
+                sendNotInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
             }
         } else {
             switch (peerState) {
                 case 2:
                     if (messageType.equals(MessageConstants.MESSAGE_BITFIELD)) {
                         logAndShowInConsole(currentPeerID + " received a BITFIELD message from Peer " + remotePeerID);
-                        sendBitFieldMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(3);
+                        sendBitFieldMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(3);
                     }
                     break;
 
                 case 3:
                     if(messageType.equals(MessageConstants.MESSAGE_INTERESTED)) {
                         logAndShowInConsole(currentPeerID + " receieved an INTERESTED message from Peer " + remotePeerID);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setIsInterested(1);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setIsHandShaked(1);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(4);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setIsInterested(1);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setIsHandShaked(1);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(4);
                     }else if(messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED)) {
                         logAndShowInConsole(currentPeerID + " receieved an NOT INTERESTED message from Peer " + remotePeerID);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setIsInterested(0);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setIsHandShaked(1);
-                        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(5);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setIsInterested(0);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setIsHandShaked(1);
+                        peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(5);
                     }
                     break;
                 case 8:
                    if(messageType.equals(MessageConstants.MESSAGE_BITFIELD)) {
                        if(isPeerInterested(messageDetails.getMessage(), remotePeerID)) {
-                           sendInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                           P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
+                           sendInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                           peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
                        }else{
-                           sendNotInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                           P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
+                           sendNotInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                           peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
                        }
                    }
                    break;
                 case 14:
                     if(messageType.equals(MessageConstants.MESSAGE_HAVE)) {
                         if(isPeerInterested(messageDetails.getMessage(), remotePeerID)) {
-                            sendInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                            P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
+                            sendInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                            peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(9);
                         }else{
-                            sendNotInterestedMessage(P2PProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                            P2PProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
+                            sendNotInterestedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                            peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(13);
                         }
                     }
                     break;
@@ -106,7 +106,7 @@ public class PeerMessageProcessingHandler implements Runnable {
 
     private void sendBitFieldMessage(Socket socket, String remotePeerID) {
         logAndShowInConsole(currentPeerID + " sending a BITFIELD message to Peer " + remotePeerID);
-        byte[] bitFieldMessageInByteArray = P2PProcess.bitFieldMessage.getBytes();
+        byte[] bitFieldMessageInByteArray = peerProcess.bitFieldMessage.getBytes();
         Message message = new Message(MessageConstants.MESSAGE_BITFIELD, bitFieldMessageInByteArray);
         byte[] messageInBytes = Message.convertMessageToByteArray(message);
         SendMessageToSocket(socket, messageInBytes);
@@ -114,9 +114,9 @@ public class PeerMessageProcessingHandler implements Runnable {
 
     private boolean isPeerInterested(Message message, String remotePeerID) {
         BitFieldMessage bitField = BitFieldMessage.decodeMessage(message.getPayload());
-        P2PProcess.remotePeerDetailsMap.get(remotePeerID).setBitFieldMessage(bitField);
+        peerProcess.remotePeerDetailsMap.get(remotePeerID).setBitFieldMessage(bitField);
 
-        if (P2PProcess.bitFieldMessage.containsInterestingPieces(bitField))
+        if (peerProcess.bitFieldMessage.containsInterestingPieces(bitField))
             return true;
         return false;
     }
