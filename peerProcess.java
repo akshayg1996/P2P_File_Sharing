@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class P2PProcess {
+public class peerProcess {
     public Thread serverThread;
     public ServerSocket serverSocket = null;
     public static String currentPeerID;
@@ -29,7 +29,7 @@ public class P2PProcess {
     public static volatile ConcurrentHashMap<String, RemotePeerDetails> unchokedNeighboursMap = new ConcurrentHashMap();
 
     public static void main(String[] args) {
-        P2PProcess process = new P2PProcess();
+        peerProcess process = new peerProcess();
         currentPeerID = args[0];
 
         try {
@@ -97,7 +97,7 @@ public class P2PProcess {
         }
     }
 
-    public static void startMessageProcessingThread(P2PProcess process)
+    public static void startMessageProcessingThread(peerProcess process)
     {
         try {
             process.serverSocket = new ServerSocket(currentPeerPort);

@@ -13,14 +13,14 @@ javac Message.java
 javac MessageConstants.java
 javac MessageDetails.java
 javac MessageQueue.java
-javac P2PProcess.java
 javac PeerMessageHandler.java
 javac PeerMessageProcessingHandler.java
 javac PeerServerHandler.java
 javac RemotePeerDetails.java
+javac peerProcess.java
 
 echo "Done compiling"
 
 echo "Running the project"
 
-java P2PProcess 1001
+java peerProcess 1001
