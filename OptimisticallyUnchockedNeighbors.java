@@ -18,7 +18,7 @@ public class OptimisticallyUnchockedNeighbors extends TimerTask {
         Vector<RemotePeerDetails> remotePeerDetailsVector = new Vector();
         for (String key : keys) {
             RemotePeerDetails remotePeerDetails = peerProcess.remotePeerDetailsMap.get(key);
-            if (!key.equals(remotePeerDetails.getId()) && hasPeerHandShaked(remotePeerDetails)) {
+            if (!key.equals(peerProcess.currentPeerID) && hasPeerHandShaked(remotePeerDetails)) {
                 remotePeerDetailsVector.add(remotePeerDetails);
             }
         }
