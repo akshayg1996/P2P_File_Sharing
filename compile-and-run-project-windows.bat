@@ -5,7 +5,7 @@ echo "Compiling all the classes in the project"
 
 javac BitFieldMessage.java
 javac CommonConfiguration.java
-javac ConversionUtils.java
+javac PeerProcessUtils.java
 javac FilePiece.java
 javac HandshakeMessage.java
 javac LogFormatter.java

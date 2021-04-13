@@ -48,7 +48,7 @@ public class FilePiece {
         byte[] indexInBytes = new byte[MessageConstants.PIECE_INDEX_LENGTH];
         FilePiece filePiece = new FilePiece();
         System.arraycopy(payloadInBytes, 0, indexInBytes, 0, MessageConstants.PIECE_INDEX_LENGTH);
-        filePiece.setPieceIndex(ConversionUtils.convertByteArrayToInt(indexInBytes));
+        filePiece.setPieceIndex(PeerProcessUtils.convertByteArrayToInt(indexInBytes));
         filePiece.setContent(new byte[payloadInBytes.length - MessageConstants.PIECE_INDEX_LENGTH]);
         System.arraycopy(payloadInBytes, MessageConstants.PIECE_INDEX_LENGTH, filePiece.getContent(), 0, payloadInBytes.length - MessageConstants.PIECE_INDEX_LENGTH);
         return filePiece;

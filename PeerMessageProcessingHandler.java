@@ -139,7 +139,7 @@ public class PeerMessageProcessingHandler implements Runnable {
             pieceInBytes[i] = 0;
         }
 
-        byte[] pieceIndexInBytes = ConversionUtils.convertIntToByteArray(pieceIndex);
+        byte[] pieceIndexInBytes = PeerProcessUtils.convertIntToByteArray(pieceIndex);
         System.arraycopy(pieceIndexInBytes, 0, pieceInBytes, 0, pieceIndexInBytes.length);
         Message message = new Message(MessageConstants.MESSAGE_REQUEST, pieceIndexInBytes);
         SendMessageToSocket(socket, Message.convertMessageToByteArray(message));
@@ -147,7 +147,7 @@ public class PeerMessageProcessingHandler implements Runnable {
 
     private void sendFilePiece(Socket socket, Message message, String remotePeerID) {
         byte[] pieceIndexInBytes = message.getPayload();
-        int pieceIndex = ConversionUtils.convertByteArrayToInt(pieceIndexInBytes);
+        int pieceIndex = PeerProcessUtils.convertByteArrayToInt(pieceIndexInBytes);
         int pieceSize = CommonConfiguration.pieceSize;
         logAndShowInConsole(currentPeerID + " sending a PIECE message for piece " + pieceIndex + " to peer " + remotePeerID);
 

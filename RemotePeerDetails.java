@@ -11,6 +11,7 @@ public class RemotePeerDetails {
     private int isInterested;
     private int isHandShaked;
     private int isChoked;
+    private int isComplete;
     private Date startTime;
     private Date endTime;
     private double dataRate;
@@ -126,5 +127,17 @@ public class RemotePeerDetails {
 
     public void setDataRate(double dataRate) {
         this.dataRate = dataRate;
+    }
+
+    public int getIsComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(int isComplete) {
+        this.isComplete = isComplete;
+    }
+
+    public void updatePeerDetails(String currentPeerID, int i) {
+
     }
 }

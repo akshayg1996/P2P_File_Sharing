@@ -68,7 +68,7 @@ public class Message {
     public void setMessageLength(int messageLength) {
         dataLength = messageLength;
         length = ((Integer) messageLength).toString();
-        lengthInBytes = ConversionUtils.convertIntToByteArray(messageLength);
+        lengthInBytes = PeerProcessUtils.convertIntToByteArray(messageLength);
     }
 
     public static byte[] convertMessageToByteArray(Message message) {

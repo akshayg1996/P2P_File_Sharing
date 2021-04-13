@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 public class BitFieldMessage {
 
     private FilePiece[] filePieces;
@@ -87,6 +92,29 @@ public class BitFieldMessage {
         return bitFieldMessage;
     }
 
+    public int getNumberOfPiecesPresent() {
+        int count = 0;
+        for(FilePiece filePiece :filePieces) {
+            if(filePiece.getIsPresent() == 1) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public boolean isFileDownloadComplete() {
+        boolean isFileDownloaded = true;
+        for(FilePiece filePiece :filePieces) {
+            if(filePiece.getIsPresent() == 0) {
+                isFileDownloaded = false;
+                break;
+            }
+        }
+
+        return isFileDownloaded;
+    }
+
     public synchronized boolean containsInterestingPieces(BitFieldMessage bitFieldMessage) {
         int numberOfPieces = bitFieldMessage.getNumberOfPieces();
         boolean hasInterestingPieces = false;
@@ -127,6 +155,48 @@ public class BitFieldMessage {
         return pieceIndex;
     }
 
-    public void updateBitFieldInformation(String remotePeerID, FilePiece filePiece) {
+    public void updateBitFieldInformation(String peerID, FilePiece filePiece) {
+        int pieceIndex = filePiece.getPieceIndex();
+        try {
+            if (isPieceAlreadyPresent(pieceIndex)) {
+                logAndShowInConsole(peerID + " Piece already received!!");
+            } else {
+                String fileName = CommonConfiguration.fileName;
+
+                File file = new File(peerProcess.currentPeerID, fileName);
+                int offSet = pieceIndex * CommonConfiguration.pieceSize;
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+                byte[] pieceToWrite = filePiece.getContent();
+                randomAccessFile.seek(offSet);
+                randomAccessFile.write(pieceToWrite);
+
+                filePieces[pieceIndex].setIsPresent(1);
+                filePieces[pieceIndex].setFromPeerID(peerID);
+                randomAccessFile.close();
+                logAndShowInConsole(peerProcess.currentPeerID + " has downloaded the PIECE " + pieceIndex
+                        + " from Peer " + peerID + ". Now the number of pieces it has is "
+                        + peerProcess.bitFieldMessage.getNumberOfPiecesPresent());
+
+                if(peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                    peerProcess.remotePeerDetailsMap.get(peerID).setIsInterested(0);
+                    peerProcess.remotePeerDetailsMap.get(peerID).setIsComplete(1);
+                    peerProcess.remotePeerDetailsMap.get(peerID).setIsChoked(0);
+                    peerProcess.remotePeerDetailsMap.get(peerID).updatePeerDetails(peerProcess.currentPeerID, 1);
+
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isPieceAlreadyPresent(int pieceIndex) {
+        return peerProcess.bitFieldMessage.getFilePieces()[pieceIndex].getIsPresent() == 1;
+    }
+
+    private static void logAndShowInConsole(String message) {
+        LogHelper.logAndShowInConsole(message);
     }
 }

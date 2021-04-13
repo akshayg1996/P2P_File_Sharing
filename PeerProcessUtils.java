@@ -1,6 +1,6 @@
 import java.nio.ByteBuffer;
 
-public class ConversionUtils {
+public class PeerProcessUtils {
 
     public static byte[] convertIntToByteArray(int value) {
         return ByteBuffer.allocate(4).putInt(value).array();
