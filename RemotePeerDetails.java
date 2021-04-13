@@ -144,7 +144,7 @@ public class RemotePeerDetails {
         this.isComplete = isComplete;
     }
 
-    public void updatePeerDetails(String currentPeerID, int i) throws IOException {
+    public void updatePeerDetails(String currentPeerID, int hasFile) throws IOException {
         Path path = Paths.get("PeerInfo-demo.cfg");
         Stream<String> lines = Files.lines(path);
 
@@ -152,8 +152,8 @@ public class RemotePeerDetails {
                 {
                     String newLine = line;
                     String[] tokens = line.trim().split("\\s+");
-                    if (tokens[0].equals("1004")) {
-                        newLine = tokens[0] + " " + tokens[1] + " " + tokens[2] + " " + "1";
+                    if (tokens[0].equals(currentPeerID)) {
+                        newLine = tokens[0] + " " + tokens[1] + " " + tokens[2] + " " + hasFile;
                     }
 
                     return newLine;
