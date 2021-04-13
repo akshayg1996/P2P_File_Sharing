@@ -177,10 +177,35 @@ public class PeerMessageHandler implements Runnable {
                 message.setLengthInBytes(messageLengthInBytes);
                 message.setTypeInBytes(messageTypeInBytes);
                 String messageType = message.getType();
-                if(messageType.equals(MessageConstants.MESSAGE_INTERESTED) || messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED)) {
+                if (messageType.equals(MessageConstants.MESSAGE_INTERESTED) || messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED) ||
+                    messageType.equals(MessageConstants.MESSAGE_CHOKE) || messageType.equals(MessageConstants.MESSAGE_UNCHOKE)) {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
+                }
+                else {
+                    int bytesAlreadyRead = 0;
+                    int bytesRead;
+                    byte []dataBuffPayload = new byte[message.getMessageLengthAsInteger() - 1];
+                    while(bytesAlreadyRead < message.getMessageLengthAsInteger()-1){
+                        bytesRead = socketInputStream.read(dataBuffPayload, bytesAlreadyRead, message.getMessageLengthAsInteger() - 1 - bytesAlreadyRead);
+                        if(bytesRead == -1)
+                            return;
+                        bytesAlreadyRead += bytesRead;
+                    }
+
+                    byte []dataBuffWithPayload = new byte [message.getMessageLengthAsInteger() + MessageConstants.MESSAGE_LENGTH];
+                    System.arraycopy(dataBufferWithoutPayload, 0, dataBuffWithPayload, 0, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE);
+                    System.arraycopy(dataBuffPayload, 0, dataBuffWithPayload, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE, dataBuffPayload.length);
+
+                    Message dataMsgWithPayload = Message.convertByteArrayToMessage(dataBuffWithPayload);
+                    messageDetails.setMessage(dataMsgWithPayload);
+                    messageDetails.setFromPeerID(remotePeerId);
+                    MessageQueue.addMessageToMessageQueue(messageDetails);
+                    dataBuffPayload = null;
+                    dataBuffWithPayload = null;
+                    bytesAlreadyRead = 0;
+                    bytesRead = 0;
                 }
             }
 

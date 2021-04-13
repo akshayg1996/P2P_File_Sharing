@@ -71,6 +71,27 @@ public class Message {
         lengthInBytes = PeerProcessUtils.convertIntToByteArray(messageLength);
     }
 
+    public void setMessageLength(byte[] len) {
+
+        Integer l = PeerProcessUtils.convertByteArrayToInt(len);
+        this.length = l.toString();
+        this.lengthInBytes = len;
+        this.dataLength = l;
+    }
+
+    public void setMessageType(byte[] type) {
+        try {
+            this.type = new String(type, MessageConstants.DEFAULT_CHARSET);
+            this.typeInBytes = type;
+        } catch (UnsupportedEncodingException e) {
+            logAndShowInConsole(e.toString());
+        }
+    }
+
+    public int getMessageLengthAsInteger() {
+        return this.dataLength;
+    }
+
     public static byte[] convertMessageToByteArray(Message message) {
         byte[] messageInByteArray = null;
         try {
@@ -101,6 +122,47 @@ public class Message {
         }
 
         return messageInByteArray;
+    }
+
+    public static Message convertByteArrayToMessage(byte[] message) {
+
+        Message msg = new Message();
+        byte[] msgLength = new byte[MessageConstants.MESSAGE_LENGTH];
+        byte[] msgType = new byte[MessageConstants.MESSAGE_TYPE];
+        byte[] payLoad = null;
+        int len;
+
+        try
+        {
+            if (message == null)
+                throw new Exception("Invalid data.");
+            else if (message.length < MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE)
+                throw new Exception("Byte array length is too small...");
+
+
+            System.arraycopy(message, 0, msgLength, 0, MessageConstants.MESSAGE_LENGTH);
+            System.arraycopy(message, MessageConstants.MESSAGE_LENGTH, msgType, 0, MessageConstants.MESSAGE_TYPE);
+
+            msg.setMessageLength(msgLength);
+            msg.setMessageType(msgType);
+
+            len = PeerProcessUtils.convertByteArrayToInt(msgLength);
+
+            if (len > 1)
+            {
+                payLoad = new byte[len-1];
+                System.arraycopy(message, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE,	payLoad, 0, message.length - MessageConstants.MESSAGE_LENGTH - MessageConstants.MESSAGE_TYPE);
+                msg.setPayload(payLoad);
+            }
+
+            payLoad = null;
+        }
+        catch (Exception e)
+        {
+            LogHelper.logAndShowInConsole(e.toString());
+            msg = null;
+        }
+        return msg;
     }
 
     public String getType() {
