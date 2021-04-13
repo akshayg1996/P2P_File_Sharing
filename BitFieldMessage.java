@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -94,8 +93,8 @@ public class BitFieldMessage {
 
     public int getNumberOfPiecesPresent() {
         int count = 0;
-        for(FilePiece filePiece :filePieces) {
-            if(filePiece.getIsPresent() == 1) {
+        for (FilePiece filePiece : filePieces) {
+            if (filePiece.getIsPresent() == 1) {
                 count++;
             }
         }
@@ -105,8 +104,8 @@ public class BitFieldMessage {
 
     public boolean isFileDownloadComplete() {
         boolean isFileDownloaded = true;
-        for(FilePiece filePiece :filePieces) {
-            if(filePiece.getIsPresent() == 0) {
+        for (FilePiece filePiece : filePieces) {
+            if (filePiece.getIsPresent() == 0) {
                 isFileDownloaded = false;
                 break;
             }
@@ -177,17 +176,16 @@ public class BitFieldMessage {
                         + " from Peer " + peerID + ". Now the number of pieces it has is "
                         + peerProcess.bitFieldMessage.getNumberOfPiecesPresent());
 
-                if(peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                if (peerProcess.bitFieldMessage.isFileDownloadComplete()) {
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsInterested(0);
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsComplete(1);
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsChoked(0);
                     peerProcess.remotePeerDetailsMap.get(peerID).updatePeerDetails(peerProcess.currentPeerID, 1);
-
+                    logAndShowInConsole(peerProcess.currentPeerID + " has DOWNLOADED the complete file.");
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
+            logAndShowInConsole(peerProcess.currentPeerID + " EROR in updating bitfield " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,4 +1,11 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RemotePeerDetails {
     private String id;
@@ -137,7 +144,23 @@ public class RemotePeerDetails {
         this.isComplete = isComplete;
     }
 
-    public void updatePeerDetails(String currentPeerID, int i) {
+    public void updatePeerDetails(String currentPeerID, int i) throws IOException {
+        Path path = Paths.get("PeerInfo-demo.cfg");
+        Stream<String> lines = Files.lines(path);
 
+        List<String> newLines = lines.map(line ->
+                {
+                    String newLine = line;
+                    String[] tokens = line.trim().split("\\s+");
+                    if (tokens[0].equals("1004")) {
+                        newLine = tokens[0] + " " + tokens[1] + " " + tokens[2] + " " + "1";
+                    }
+
+                    return newLine;
+                }
+        ).collect(Collectors.toList());
+        Files.write(path, newLines);
+        lines.close();
+        System.out.println("Find and Replace done!!!");
     }
 }

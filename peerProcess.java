@@ -185,4 +185,22 @@ public class peerProcess {
     private static void logAndShowInConsole(String message) {
         LogHelper.logAndShowInConsole(message);
     }
+
+    public static void updateOtherPeerDetails() {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("PeerInfo.cfg"));
+            for (int i = 0; i < lines.size(); i++) {
+                String[] properties = lines.get(i).split("\\s+");
+                String peerID = properties[0];
+                int isCompleted = Integer.parseInt(properties[3]);
+                if(isCompleted == 1) {
+                    remotePeerDetailsMap.get(peerID).setIsComplete(1);
+                    remotePeerDetailsMap.get(peerID).setIsInterested(0);
+                    remotePeerDetailsMap.get(peerID).setIsChoked(0);
+                }
+            }
+        } catch (IOException e) {
+            logAndShowInConsole("Error occured while reading peer configuration - " + e.getMessage());
+        }
+    }
 }
