@@ -9,7 +9,7 @@ public class BitFieldMessage {
         numberOfPieces = (int) Math.ceil(fileSize / pieceSize);
         filePieces = new FilePiece[numberOfPieces];
 
-        for(int i=0; i< numberOfPieces; i++) {
+        for (int i = 0; i < numberOfPieces; i++) {
             filePieces[i] = new FilePiece();
         }
     }
@@ -103,4 +103,30 @@ public class BitFieldMessage {
         return hasInterestingPieces;
     }
 
+    public synchronized int getFirstDifferentPieceIndex(BitFieldMessage bitFieldMessage) {
+        int firstPieces = numberOfPieces;
+        int secondPieces = bitFieldMessage.getNumberOfPieces();
+        int pieceIndex = -1;
+
+        if (secondPieces >= firstPieces) {
+            for (int i = 0; i < firstPieces; i++) {
+                if (filePieces[i].getIsPresent() == 0 && bitFieldMessage.getFilePieces()[i].getIsPresent() == 1) {
+                    pieceIndex = i;
+                    break;
+                }
+            }
+        } else {
+            for (int i = 0; i < secondPieces; i++) {
+                if (filePieces[i].getIsPresent() == 0 && bitFieldMessage.getFilePieces()[i].getIsPresent() == 1) {
+                    pieceIndex = i;
+                    break;
+                }
+            }
+        }
+
+        return pieceIndex;
+    }
+
+    public void updateBitFieldInformation(String remotePeerID, FilePiece filePiece) {
+    }
 }

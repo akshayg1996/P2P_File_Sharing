@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class RemotePeerDetails {
     private String id;
     private String hostAddress;
@@ -6,9 +8,12 @@ public class RemotePeerDetails {
     private int index;
     private int peerState;
     private BitFieldMessage bitFieldMessage;
-    public int isInterested;
-    public int isHandShaked;
-    public int isChoked;
+    private int isInterested;
+    private int isHandShaked;
+    private int isChoked;
+    private Date startTime;
+    private Date endTime;
+    private double dataRate;
 
     public RemotePeerDetails(String id, String hostAddress, String port, int hasFile, int index) {
         this.id = id;
@@ -16,6 +21,7 @@ public class RemotePeerDetails {
         this.port = port;
         this.hasFile = hasFile;
         this.index = index;
+        this.dataRate = 0;
     }
 
     public String getId() {
@@ -96,5 +102,29 @@ public class RemotePeerDetails {
 
     public void setIsChoked(int isChoked) {
         this.isChoked = isChoked;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public double getDataRate() {
+        return dataRate;
+    }
+
+    public void setDataRate(double dataRate) {
+        this.dataRate = dataRate;
     }
 }
