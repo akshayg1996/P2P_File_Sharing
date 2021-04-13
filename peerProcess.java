@@ -203,4 +203,30 @@ public class peerProcess {
             logAndShowInConsole("Error occured while reading peer configuration - " + e.getMessage());
         }
     }
+
+    public static void sendUnChokeMessage(Socket socket, String remotePeerID) {
+        logAndShowInConsole(currentPeerID + " is sending UNCHOKE message to remote Peer " + remotePeerID);
+        Message d = new Message(MessageConstants.MESSAGE_UNCHOKE);
+        byte[] msgByte = Message.convertMessageToByteArray(d);
+        SendDataStream(socket, msgByte);
+    }
+
+    public static void sendHaveMessage(Socket socket, String remotePeerID) {
+        byte[] encodedBitField = bitFieldMessage.getBytes();
+        logAndShowInConsole(currentPeerID + " sending HAVE message to Peer " + remotePeerID);
+        Message d = new Message(MessageConstants.MESSAGE_HAVE, encodedBitField);
+        SendDataStream(socket,Message.convertMessageToByteArray(d));
+        encodedBitField = null;
+    }
+
+    public static int SendDataStream(Socket socket, byte[] encodedBitField) {
+        try {
+            OutputStream out = socket.getOutputStream();
+            out.write(encodedBitField);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
+    }
 }

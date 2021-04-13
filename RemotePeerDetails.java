@@ -13,7 +13,8 @@ public class RemotePeerDetails {
     private String port;
     private int hasFile;
     private int index;
-    private int peerState;
+    private int peerState = -1;
+    private int isPreferredNeighbor = 0;
     private BitFieldMessage bitFieldMessage;
     private int isInterested;
     private int isHandShaked;
@@ -70,6 +71,14 @@ public class RemotePeerDetails {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public int getIsPreferredNeighbor() {
+        return this.isPreferredNeighbor;
+    }
+
+    public void setIsPreferredNeighbor(int isPreferredNeighbor) {
+        this.isPreferredNeighbor = isPreferredNeighbor;
     }
 
     public int getPeerState() {
@@ -162,5 +171,15 @@ public class RemotePeerDetails {
         Files.write(path, newLines);
         lines.close();
         System.out.println("Find and Replace done!!!");
+    }
+
+    public int compareTo(RemotePeerDetails o1) {
+
+        if (this.dataRate > o1.dataRate)
+            return 1;
+        else if (this.dataRate == o1.dataRate)
+            return 0;
+        else
+            return -1;
     }
 }
