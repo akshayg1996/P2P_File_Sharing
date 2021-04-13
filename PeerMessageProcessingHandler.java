@@ -224,7 +224,7 @@ public class PeerMessageProcessingHandler implements Runnable {
     }
 
     private boolean isNotPreferredAndUnchokedNeighbour(String remotePeerId) {
-        return !peerProcess.preferredNeighboursMap.containsKey(remotePeerId) && !peerProcess.unchokedNeighboursMap.containsKey(remotePeerId);
+        return !peerProcess.preferredNeighboursMap.containsKey(remotePeerId) && !peerProcess.optimisticUnchokedNeighbors.containsKey(remotePeerId);
     }
 
     private void sendChokedMessage(Socket socket, String remotePeerID) {

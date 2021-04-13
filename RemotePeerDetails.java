@@ -15,6 +15,7 @@ public class RemotePeerDetails {
     private int index;
     private int peerState;
     private BitFieldMessage bitFieldMessage;
+    private int isOptimisticallyUnchockedNeighbor;
     private int isInterested;
     private int isHandShaked;
     private int isChoked;
@@ -30,6 +31,7 @@ public class RemotePeerDetails {
         this.hasFile = hasFile;
         this.index = index;
         this.dataRate = 0;
+        this.isOptimisticallyUnchockedNeighbor = 0;
     }
 
     public String getId() {
@@ -144,6 +146,14 @@ public class RemotePeerDetails {
         this.isComplete = isComplete;
     }
 
+    public int getIsOptimisticallyUnchockedNeighbor() {
+        return isOptimisticallyUnchockedNeighbor;
+    }
+
+    public void setIsOptimisticallyUnchockedNeighbor(int isOptimisticallyUnchockedNeighbor) {
+        this.isOptimisticallyUnchockedNeighbor = isOptimisticallyUnchockedNeighbor;
+    }
+
     public void updatePeerDetails(String currentPeerID, int hasFile) throws IOException {
         Path path = Paths.get("PeerInfo-demo.cfg");
         Stream<String> lines = Files.lines(path);
@@ -161,6 +171,5 @@ public class RemotePeerDetails {
         ).collect(Collectors.toList());
         Files.write(path, newLines);
         lines.close();
-        System.out.println("Find and Replace done!!!");
     }
 }
