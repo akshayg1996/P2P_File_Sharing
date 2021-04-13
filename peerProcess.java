@@ -104,6 +104,7 @@ public class peerProcess {
                 startMessageProcessingThread(process);
             }
 
+            determinePreferredNeighbors();
             determineOptimisticallyUnchockedNeighbours();
 
             while (true) {
@@ -158,6 +159,13 @@ public class peerProcess {
             logAndShowInConsole(currentPeerID + " Peer process is exiting..");
             System.exit(0);
         }
+    }
+
+    public static void determinePreferredNeighbors() {
+        timerPreferredNeighbors = new Timer();
+        timerPreferredNeighbors.schedule(new PrefNeighbors(),
+                CommonConfiguration.unchockingInterval * 1000 * 0,
+                CommonConfiguration.unchockingInterval * 1000);
     }
 
     public static void determineOptimisticallyUnchockedNeighbours() {
