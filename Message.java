@@ -14,7 +14,8 @@ public class Message {
 
     public Message(String messageType) {
         try {
-            if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED) {
+            if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED ||
+                    messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE) {
                 setMessageLength(1);
                 setMessageType(messageType);
                 this.payload = null;
