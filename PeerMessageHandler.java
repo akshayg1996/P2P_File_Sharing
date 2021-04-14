@@ -115,6 +115,7 @@ public class PeerMessageHandler implements Runnable {
                     logAndShowInConsole(ownPeerId + " HANDSHAKE has been sent");
                 } else {
                     logAndShowInConsole(ownPeerId + " HANDSHAKE sending failed");
+                    System.exit(0);
                 }
 
                 while (true) {
@@ -176,8 +177,8 @@ public class PeerMessageHandler implements Runnable {
                 System.arraycopy(dataBufferWithoutPayload, 0, messageLengthInBytes, 0, MessageConstants.MESSAGE_LENGTH);
                 System.arraycopy(dataBufferWithoutPayload, MessageConstants.MESSAGE_LENGTH, messageTypeInBytes, 0, MessageConstants.MESSAGE_TYPE);
                 Message message = new Message();
-                message.setLengthInBytes(messageLengthInBytes);
-                message.setTypeInBytes(messageTypeInBytes);
+                message.setMessageLength(messageLengthInBytes);
+                message.setMessageType(messageTypeInBytes);
                 String messageType = message.getType();
                 if (messageType.equals(MessageConstants.MESSAGE_INTERESTED) || messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED) ||
                     messageType.equals(MessageConstants.MESSAGE_CHOKE) || messageType.equals(MessageConstants.MESSAGE_UNCHOKE)) {
