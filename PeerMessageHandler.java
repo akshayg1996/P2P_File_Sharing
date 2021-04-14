@@ -169,10 +169,12 @@ public class PeerMessageHandler implements Runnable {
 
             while (true) {
                 int headerBytes = socketInputStream.read(dataBufferWithoutPayload);
-                messageLengthInBytes = new byte[MessageConstants.HANDSHAKE_MESSAGE_LENGTH];
+                if(headerBytes == -1)
+                    break;
+                messageLengthInBytes = new byte[MessageConstants.MESSAGE_LENGTH];
                 messageTypeInBytes = new byte[MessageConstants.MESSAGE_TYPE];
-                System.arraycopy(dataBufferWithoutPayload, 0, messageLengthInBytes, 0, MessageConstants.HANDSHAKE_MESSAGE_LENGTH);
-                System.arraycopy(dataBufferWithoutPayload, MessageConstants.HANDSHAKE_MESSAGE_LENGTH, messageTypeInBytes, 0, MessageConstants.MESSAGE_TYPE);
+                System.arraycopy(dataBufferWithoutPayload, 0, messageLengthInBytes, 0, MessageConstants.MESSAGE_LENGTH);
+                System.arraycopy(dataBufferWithoutPayload, MessageConstants.MESSAGE_LENGTH, messageTypeInBytes, 0, MessageConstants.MESSAGE_TYPE);
                 Message message = new Message();
                 message.setLengthInBytes(messageLengthInBytes);
                 message.setTypeInBytes(messageTypeInBytes);
@@ -202,10 +204,6 @@ public class PeerMessageHandler implements Runnable {
                     messageDetails.setMessage(dataMsgWithPayload);
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
-                    dataBuffPayload = null;
-                    dataBuffWithPayload = null;
-                    bytesAlreadyRead = 0;
-                    bytesRead = 0;
                 }
             }
 
