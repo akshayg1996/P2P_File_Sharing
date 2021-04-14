@@ -15,7 +15,8 @@ public class Message {
     public Message(String messageType) {
         try {
             if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED ||
-                    messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE) {
+                    messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
+                    || messageType == MessageConstants.MESSAGE_DOWNLOADED) {
                 setMessageLength(1);
                 setMessageType(messageType);
                 this.payload = null;
@@ -39,7 +40,8 @@ public class Message {
                 setPayload(payload);
             } else {
                 if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED
-                    || messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE) {
+                        || messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
+                        || messageType == MessageConstants.MESSAGE_DOWNLOADED) {
                     setMessageLength(1);
                     this.payload = null;
                 } else {
@@ -134,8 +136,7 @@ public class Message {
         byte[] payLoad = null;
         int len;
 
-        try
-        {
+        try {
             if (message == null)
                 throw new Exception("Invalid data.");
             else if (message.length < MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE)
@@ -150,17 +151,14 @@ public class Message {
 
             len = PeerProcessUtils.convertByteArrayToInt(msgLength);
 
-            if (len > 1)
-            {
-                payLoad = new byte[len-1];
-                System.arraycopy(message, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE,	payLoad, 0, message.length - MessageConstants.MESSAGE_LENGTH - MessageConstants.MESSAGE_TYPE);
+            if (len > 1) {
+                payLoad = new byte[len - 1];
+                System.arraycopy(message, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE, payLoad, 0, message.length - MessageConstants.MESSAGE_LENGTH - MessageConstants.MESSAGE_TYPE);
                 msg.setPayload(payLoad);
             }
 
             payLoad = null;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LogHelper.logAndShowInConsole(e.toString());
             msg = null;
         }
