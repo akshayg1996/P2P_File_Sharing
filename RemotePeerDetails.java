@@ -164,7 +164,7 @@ public class RemotePeerDetails {
     }
 
     public void updatePeerDetails(String currentPeerID, int hasFile) throws IOException {
-        Path path = Paths.get("PeerInfo-demo.cfg");
+        Path path = Paths.get("PeerInfo.cfg");
         Stream<String> lines = Files.lines(path);
 
         List<String> newLines = lines.map(line ->
