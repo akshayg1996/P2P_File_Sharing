@@ -80,7 +80,7 @@ public class peerProcess {
             bitFieldMessage = new BitFieldMessage();
             bitFieldMessage.setPieceDetails(currentPeerID, currentPeerHasFile);
 
-            messageProcessor = new Thread(new PeerMessageProcessingHandler());
+            messageProcessor = new Thread(new PeerMessageProcessingHandler(currentPeerID));
             messageProcessor.start();
 
             if (isFirstPeer) {
