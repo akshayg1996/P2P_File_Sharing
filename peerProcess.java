@@ -96,7 +96,7 @@ public class peerProcess {
                         Thread tempThread = new Thread(new PeerMessageHandler(
                                 remotePeerDetails.getHostAddress(), Integer
                                 .parseInt(remotePeerDetails.getPort()), 1,
-                                peerID));
+                                currentPeerID));
                         peerThreads.add(tempThread);
                         tempThread.start();
                     }
