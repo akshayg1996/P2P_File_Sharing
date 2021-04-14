@@ -37,7 +37,8 @@ public class Message {
                 }
                 setPayload(payload);
             } else {
-                if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED) {
+                if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED
+                    || messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE) {
                     setMessageLength(1);
                     this.payload = null;
                 } else {
