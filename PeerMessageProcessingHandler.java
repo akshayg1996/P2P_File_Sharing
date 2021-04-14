@@ -207,26 +207,31 @@ public class PeerMessageProcessingHandler implements Runnable {
         int pieceSize = CommonConfiguration.pieceSize;
         logAndShowInConsole(currentPeerID + " sending a PIECE message for piece " + pieceIndex + " to peer " + remotePeerID);
 
-        byte[] numberOfBytesRead = new byte[pieceSize];
-        int bytesRead = 0;
+        byte[] bytesRead = new byte[pieceSize];
+        int numberOfBytesRead = 0;
         File file = new File(currentPeerID, CommonConfiguration.fileName);
         try {
             randomAccessFile = new RandomAccessFile(file, "r");
             randomAccessFile.seek(pieceIndex * pieceSize);
-            bytesRead = randomAccessFile.read(numberOfBytesRead, 0, pieceSize);
-            if (bytesRead < 0) {
+            numberOfBytesRead = randomAccessFile.read(bytesRead, 0, pieceSize);
+            if (numberOfBytesRead < 0) {
                 logAndShowInConsole(currentPeerID + " ERROR occured file " + CommonConfiguration.fileName + " could not be read properly");
-            } else if (bytesRead == 0) {
+            } else if (numberOfBytesRead == 0) {
                 logAndShowInConsole(currentPeerID + " ERROR occured zero bytes read from file " + CommonConfiguration.fileName);
             }
 
-            byte[] buffer = new byte[bytesRead + MessageConstants.PIECE_INDEX_LENGTH];
-            System.arraycopy(pieceIndex, 0, buffer, 0, MessageConstants.PIECE_INDEX_LENGTH);
-            System.arraycopy(bytesRead, 0, buffer, MessageConstants.PIECE_INDEX_LENGTH, bytesRead);
+            byte[] buffer = new byte[numberOfBytesRead + MessageConstants.PIECE_INDEX_LENGTH];
+            System.arraycopy(pieceIndexInBytes, 0, buffer, 0, MessageConstants.PIECE_INDEX_LENGTH);
+            System.arraycopy(bytesRead, 0, buffer, MessageConstants.PIECE_INDEX_LENGTH, numberOfBytesRead);
 
             Message messageToBeSent = new Message(MessageConstants.MESSAGE_PIECE, buffer);
             SendMessageToSocket(socket, Message.convertMessageToByteArray(messageToBeSent));
             randomAccessFile.close();
+
+            buffer = null;
+            bytesRead = null;
+            pieceIndexInBytes = null;
+            messageToBeSent = null;
         } catch (FileNotFoundException e) {
             logAndShowInConsole(currentPeerID + " ERROR occured while reading the file " + CommonConfiguration.fileName);
             e.printStackTrace();
