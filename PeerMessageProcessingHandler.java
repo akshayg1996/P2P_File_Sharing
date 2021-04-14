@@ -151,6 +151,11 @@ public class PeerMessageProcessingHandler implements Runnable {
                                     peerProcess.remotePeerDetailsMap.get(key).setPeerState(3);
                                 }
                             }
+
+                            if(peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                                sendDownloadedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
+                                peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(15);
+                            }
                         }
                         break;
                     case 14:
@@ -167,9 +172,21 @@ public class PeerMessageProcessingHandler implements Runnable {
                             peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(14);
                         }
                         break;
+                    case 15:
+                        try {
+                            peerProcess.remotePeerDetailsMap.get(remotePeerID).updatePeerDetails(peerProcess.currentPeerID, 1);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                 }
             }
         }
+    }
+
+    private void sendDownloadedMessage(Socket socket, String remotePeerID) {
+        byte[] bitFieldInBytes = peerProcess.bitFieldMessage.getBytes();
+        Message message = new Message(MessageConstants.MESSAGE_DOWNLOADED, bitFieldInBytes);
+        SendMessageToSocket(socket, Message.convertMessageToByteArray(message));
     }
 
     private void sendHaveMessage(Socket socket, String peerID) {
