@@ -1,3 +1,5 @@
+import java.io.UnsupportedEncodingException;
+
 public class HandshakeMessage {
     private byte[] headerInBytes = new byte[MessageConstants.HANDSHAKE_HEADER_LENGTH];
     private byte[] peerIDInBytes = new byte[MessageConstants.HANDSHAKE_PEERID_LENGTH];
@@ -73,14 +75,32 @@ public class HandshakeMessage {
                             + MessageConstants.HANDSHAKE_ZEROBITS_LENGTH, messagePeerID, 0,
                     MessageConstants.HANDSHAKE_PEERID_LENGTH);
 
-            message.setHeaderInBytes(messageHeader);
-            message.setPeerIDInBytes(messagePeerID);
+            message.setHeaderFromBytes(messageHeader);
+            message.setPeerIDFromBytes(messagePeerID);
 
         } catch (Exception e) {
             logAndShowInConsole("Error Occured while converting bytes to handshake message - " + e.getMessage());
             e.printStackTrace();
         }
         return message;
+    }
+
+    public void setPeerIDFromBytes(byte[] messagePeerID) {
+        try {
+            peerID = (new String(messagePeerID, MessageConstants.DEFAULT_CHARSET)).trim();
+            peerIDInBytes = messagePeerID;
+        } catch (UnsupportedEncodingException e) {
+            logAndShowInConsole(e.getMessage());
+        }
+    }
+
+    public void setHeaderFromBytes(byte[] messageHeader) {
+        try {
+            header = (new String(messageHeader, MessageConstants.DEFAULT_CHARSET)).trim();
+            headerInBytes = messageHeader;
+        } catch (UnsupportedEncodingException e) {
+            logAndShowInConsole(e.getMessage());
+        }
     }
 
     public byte[] getHeaderInBytes() {

@@ -12,23 +12,23 @@ public class PeerMessageHandler implements Runnable {
     private OutputStream socketOutputStream;
     private HandshakeMessage handshakeMessage;
 
-    public PeerMessageHandler(String add, int port, int connType, String ownPeerID) {
+    public PeerMessageHandler(String address, int port, int connectionType, String serverPeerID) {
         try {
-            this.connType = connType;
-            this.ownPeerId = ownPeerID;
-            this.peerSocket = new Socket(add, port);
+            this.connType = connectionType;
+            this.ownPeerId = serverPeerID;
+            this.peerSocket = new Socket(address, port);
         } catch (UnknownHostException e) {
-            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
+            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + e.getMessage());
         } catch (IOException e) {
-            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + e.getMessage());
+            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + e.getMessage());
         }
         this.connType = connType;
 
         try {
-//            in = peerSocket.getInputStream();
-//            out = peerSocket.getOutputStream();
+            socketInputStream = peerSocket.getInputStream();
+            socketOutputStream = peerSocket.getOutputStream();
         } catch (Exception ex) {
-            LogHelper.logAndShowInConsole(ownPeerID + " RemotePeerHandler : " + ex.getMessage());
+            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + ex.getMessage());
         }
     }
 
