@@ -117,28 +117,29 @@ public class peerProcess {
                     try {
                         Thread.currentThread();
                         Thread.sleep(2000);
+
+                        if (process.getServerThread().isAlive()) {
+                            process.getServerThread().stop();
+                        }
+
+                        if (messageProcessor.isAlive()) {
+                            messageProcessor.stop();
+                        }
+
+                        for (Thread thread : peerThreads) {
+                            if (thread.isAlive()) {
+                                thread.stop();
+                            }
+                        }
+
+                        for (Thread thread : serverThreads) {
+                            if (thread.isAlive()) {
+                                thread.stop();
+                            }
+                        }
+
                     } catch (InterruptedException e) {
                         logAndShowInConsole("Error occured while interrupting thread");
-                    }
-
-                    if (process.getServerThread().isAlive()) {
-                        process.getServerThread().stop();
-                    }
-
-                    if (messageProcessor.isAlive()) {
-                        messageProcessor.stop();
-                    }
-
-                    for (Thread thread : peerThreads) {
-                        if (thread.isAlive()) {
-                            thread.stop();
-                        }
-                    }
-
-                    for (Thread thread : serverThreads) {
-                        if (thread.isAlive()) {
-                            thread.stop();
-                        }
                     }
 
                     break;
@@ -313,7 +314,7 @@ public class peerProcess {
         byte[] encodedBitField = bitFieldMessage.getBytes();
         logAndShowInConsole(currentPeerID + " sending HAVE message to Peer " + remotePeerID);
         Message d = new Message(MessageConstants.MESSAGE_HAVE, encodedBitField);
-        SendDataStream(socket,Message.convertMessageToByteArray(d));
+        SendDataStream(socket, Message.convertMessageToByteArray(d));
         encodedBitField = null;
     }
 
