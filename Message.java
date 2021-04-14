@@ -47,7 +47,7 @@ public class Message {
                 }
             }
             setMessageType(messageType);
-            if (lengthInBytes.length > MessageConstants.MESSAGE_TYPE) {
+            if (typeInBytes.length > MessageConstants.MESSAGE_TYPE) {
                 logAndShowInConsole("Error Occurred while initialzing Message constructor");
                 throw new Exception("Message Constructor - Message Type length is too large");
             }
