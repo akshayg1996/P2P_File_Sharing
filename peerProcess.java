@@ -239,12 +239,13 @@ public class peerProcess {
         boolean isDownloadCompleted = true;
         try {
             List<String> lines = Files.readAllLines(Paths.get("PeerInfo.cfg"));
+            int hasFileCount = 1;
             for (int i = 0; i < lines.size(); i++) {
                 String[] properties = lines.get(i).split("\\s+");
-                if (Integer.parseInt(properties[3]) == 0) {
-                    isDownloadCompleted = false;
-                    break;
-                }
+                hasFileCount = hasFileCount * Integer.parseInt(properties[3]);
+            }
+            if (hasFileCount == 0) {
+                isDownloadCompleted = false;
             }
         } catch (IOException e) {
             logAndShowInConsole("Error occured while reading peer configuration - " + e.getMessage());
