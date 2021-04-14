@@ -164,7 +164,7 @@ public class BitFieldMessage {
 
                 File file = new File(peerProcess.currentPeerID, fileName);
                 int offSet = pieceIndex * CommonConfiguration.pieceSize;
-                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
                 byte[] pieceToWrite = filePiece.getContent();
                 randomAccessFile.seek(offSet);
                 randomAccessFile.write(pieceToWrite);
