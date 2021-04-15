@@ -2,8 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 public class PeerMessageProcessingHandler implements Runnable {
 
@@ -153,17 +151,6 @@ public class PeerMessageProcessingHandler implements Runnable {
                                     peerProcess.remotePeerDetailsMap.get(key).setPeerState(3);
                                 }
                             }
-
-                            if(peerProcess.bitFieldMessage.isFileDownloadComplete()) {
-                                sendDownloadedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
-                                peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(15);
-                                Semaphore semaphore = new Semaphore(0);
-                                try {
-                                    semaphore.tryAcquire(5, TimeUnit.SECONDS);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                         }
                         break;
                     case 14:
@@ -180,12 +167,6 @@ public class PeerMessageProcessingHandler implements Runnable {
                             peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(14);
                         }
                         break;
-                    case 15:
-                        try {
-                            peerProcess.remotePeerDetailsMap.get(remotePeerID).updatePeerDetails(peerProcess.currentPeerID, 1);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                 }
             }
         }

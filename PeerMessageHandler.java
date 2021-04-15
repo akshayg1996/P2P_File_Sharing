@@ -170,7 +170,7 @@ public class PeerMessageHandler implements Runnable {
 
             while (true) {
                 int headerBytes = socketInputStream.read(dataBufferWithoutPayload);
-                if(headerBytes == -1)
+                if (headerBytes == -1)
                     break;
                 messageLengthInBytes = new byte[MessageConstants.MESSAGE_LENGTH];
                 messageTypeInBytes = new byte[MessageConstants.MESSAGE_TYPE];
@@ -181,28 +181,22 @@ public class PeerMessageHandler implements Runnable {
                 message.setMessageType(messageTypeInBytes);
                 String messageType = message.getType();
                 if (messageType.equals(MessageConstants.MESSAGE_INTERESTED) || messageType.equals(MessageConstants.MESSAGE_NOT_INTERESTED) ||
-                    messageType.equals(MessageConstants.MESSAGE_CHOKE) || messageType.equals(MessageConstants.MESSAGE_UNCHOKE)) {
+                        messageType.equals(MessageConstants.MESSAGE_CHOKE) || messageType.equals(MessageConstants.MESSAGE_UNCHOKE)) {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
-                }else if(messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
-                    messageDetails.setMessage(message);
-                    messageDetails.setFromPeerID(remotePeerId);
-                    peerProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(15);
-                    MessageQueue.addMessageToMessageQueue(messageDetails);
-                }
-                else {
+                } else {
                     int bytesAlreadyRead = 0;
                     int bytesRead;
-                    byte []dataBuffPayload = new byte[message.getMessageLengthAsInteger() - 1];
-                    while(bytesAlreadyRead < message.getMessageLengthAsInteger()-1){
+                    byte[] dataBuffPayload = new byte[message.getMessageLengthAsInteger() - 1];
+                    while (bytesAlreadyRead < message.getMessageLengthAsInteger() - 1) {
                         bytesRead = socketInputStream.read(dataBuffPayload, bytesAlreadyRead, message.getMessageLengthAsInteger() - 1 - bytesAlreadyRead);
-                        if(bytesRead == -1)
+                        if (bytesRead == -1)
                             return;
                         bytesAlreadyRead += bytesRead;
                     }
 
-                    byte []dataBuffWithPayload = new byte [message.getMessageLengthAsInteger() + MessageConstants.MESSAGE_LENGTH];
+                    byte[] dataBuffWithPayload = new byte[message.getMessageLengthAsInteger() + MessageConstants.MESSAGE_LENGTH];
                     System.arraycopy(dataBufferWithoutPayload, 0, dataBuffWithPayload, 0, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE);
                     System.arraycopy(dataBuffPayload, 0, dataBuffWithPayload, MessageConstants.MESSAGE_LENGTH + MessageConstants.MESSAGE_TYPE, dataBuffPayload.length);
 

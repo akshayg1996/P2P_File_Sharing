@@ -117,29 +117,28 @@ public class peerProcess {
                     try {
                         Thread.currentThread();
                         Thread.sleep(2000);
-
-                        if (process.getServerThread().isAlive()) {
-                            process.getServerThread().stop();
-                        }
-
-                        if (messageProcessor.isAlive()) {
-                            messageProcessor.stop();
-                        }
-
-                        for (Thread thread : peerThreads) {
-                            if (thread.isAlive()) {
-                                thread.stop();
-                            }
-                        }
-
-                        for (Thread thread : serverThreads) {
-                            if (thread.isAlive()) {
-                                thread.stop();
-                            }
-                        }
-
                     } catch (InterruptedException e) {
                         logAndShowInConsole("Error occured while interrupting thread");
+                    }
+
+                    if (process.getServerThread().isAlive()) {
+                        process.getServerThread().stop();
+                    }
+
+                    if (messageProcessor.isAlive()) {
+                        messageProcessor.stop();
+                    }
+
+                    for (Thread thread : peerThreads) {
+                        if (thread.isAlive()) {
+                            thread.stop();
+                        }
+                    }
+
+                    for (Thread thread : serverThreads) {
+                        if (thread.isAlive()) {
+                            thread.stop();
+                        }
                     }
 
                     break;
@@ -240,13 +239,12 @@ public class peerProcess {
         boolean isDownloadCompleted = true;
         try {
             List<String> lines = Files.readAllLines(Paths.get("PeerInfo.cfg"));
-            int hasFileCount = 1;
             for (int i = 0; i < lines.size(); i++) {
                 String[] properties = lines.get(i).split("\\s+");
-                hasFileCount = hasFileCount * Integer.parseInt(properties[3]);
-            }
-            if (hasFileCount == 0) {
-                isDownloadCompleted = false;
+                if (Integer.parseInt(properties[3]) == 0) {
+                    isDownloadCompleted = false;
+                    break;
+                }
             }
         } catch (IOException e) {
             logAndShowInConsole("Error occured while reading peer configuration - " + e.getMessage());
