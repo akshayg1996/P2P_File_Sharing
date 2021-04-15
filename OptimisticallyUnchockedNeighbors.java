@@ -41,7 +41,7 @@ public class OptimisticallyUnchockedNeighbors extends TimerTask {
 
     private boolean hasPeerHandShaked(RemotePeerDetails remotePeerDetails) {
         return remotePeerDetails.getIsComplete() == 0 &&
-                remotePeerDetails.getIsChoked() == 0 && remotePeerDetails.getIsHandShaked() == 1;
+                remotePeerDetails.getIsChoked() == 1 && remotePeerDetails.getIsHandShaked() == 1;
     }
 
     private void sendUnChokedMessage(Socket socket, String remotePeerID) {
