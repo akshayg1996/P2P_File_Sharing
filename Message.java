@@ -16,7 +16,7 @@ public class Message {
         try {
             if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED ||
                     messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
-                    || messageType == MessageConstants.MESSAGE_DOWNLOADED) {
+                   ) {
                 setMessageLength(1);
                 setMessageType(messageType);
                 this.payload = null;
@@ -41,7 +41,7 @@ public class Message {
             } else {
                 if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED
                         || messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
-                        || messageType == MessageConstants.MESSAGE_DOWNLOADED) {
+                        ) {
                     setMessageLength(1);
                     this.payload = null;
                 } else {
@@ -102,7 +102,7 @@ public class Message {
             int messageType = Integer.parseInt(message.getType());
             if (message.getLengthInBytes().length > MessageConstants.MESSAGE_LENGTH)
                 throw new Exception("Message Length is Invalid.");
-            else if (messageType < 0 || messageType > 8)
+            else if (messageType < 0 || messageType > 7)
                 throw new Exception("Message Type is Invalid.");
             else if (message.getTypeInBytes() == null)
                 throw new Exception("Message Type is Invalid.");

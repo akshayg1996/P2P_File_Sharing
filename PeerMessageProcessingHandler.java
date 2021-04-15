@@ -172,12 +172,6 @@ public class PeerMessageProcessingHandler implements Runnable {
         }
     }
 
-    private void sendDownloadedMessage(Socket socket, String remotePeerID) {
-        byte[] bitFieldInBytes = peerProcess.bitFieldMessage.getBytes();
-        Message message = new Message(MessageConstants.MESSAGE_DOWNLOADED, bitFieldInBytes);
-        SendMessageToSocket(socket, Message.convertMessageToByteArray(message));
-    }
-
     private void sendHaveMessage(Socket socket, String peerID) {
         logAndShowInConsole(peerProcess.currentPeerID + " sending HAVE message to Peer " + peerID);
         byte[] bitFieldInBytes = peerProcess.bitFieldMessage.getBytes();

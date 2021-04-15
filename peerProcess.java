@@ -7,10 +7,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class peerProcess {
@@ -27,10 +24,10 @@ public class peerProcess {
     public static Vector<Thread> serverThreads = new Vector();
     public static volatile Timer timerPreferredNeighbors;
     public static volatile Timer timerOptimisticUnchokedNeighbors;
-    public static volatile ConcurrentHashMap<String, RemotePeerDetails> remotePeerDetailsMap = new ConcurrentHashMap();
-    public static volatile ConcurrentHashMap<String, RemotePeerDetails> preferredNeighboursMap = new ConcurrentHashMap();
-    public static volatile ConcurrentHashMap<String, Socket> peerToSocketMap = new ConcurrentHashMap();
-    public static volatile ConcurrentHashMap<String, RemotePeerDetails> optimisticUnchokedNeighbors = new ConcurrentHashMap();
+    public static volatile Hashtable<String, RemotePeerDetails> remotePeerDetailsMap = new Hashtable();
+    public static volatile Hashtable<String, RemotePeerDetails> preferredNeighboursMap = new Hashtable();
+    public static volatile Hashtable<String, Socket> peerToSocketMap = new Hashtable();
+    public static volatile Hashtable<String, RemotePeerDetails> optimisticUnchokedNeighbors = new Hashtable();
 
     public Thread getServerThread() {
         return serverThread;

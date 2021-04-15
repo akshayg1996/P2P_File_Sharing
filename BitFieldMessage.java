@@ -10,7 +10,7 @@ public class BitFieldMessage {
     public BitFieldMessage() {
         Double fileSize = Double.parseDouble(String.valueOf(CommonConfiguration.fileSize));
         Double pieceSize = Double.parseDouble(String.valueOf(CommonConfiguration.pieceSize));
-        numberOfPieces = (int) Math.ceil(fileSize / pieceSize);
+        numberOfPieces = (int) Math.ceil((double)fileSize / (double)pieceSize);
         filePieces = new FilePiece[numberOfPieces];
 
         for (int i = 0; i < numberOfPieces; i++) {
