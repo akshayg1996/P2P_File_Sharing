@@ -20,6 +20,7 @@ public class PeerServerHandler implements Runnable {
             try{
                 otherPeerSocket = serverSocket.accept();
                 otherPeerThread = new Thread(new PeerMessageHandler(otherPeerSocket, 0, peerID));
+                System.out.println("PeerID: "+ peerID +" makes a Connection to address: " + otherPeerSocket.getInetAddress() + " port: " + otherPeerSocket.getPort());
                 logAndShowInConsole(peerID + " Connection is Established");
                 peerProcess.serverThreads.add(otherPeerThread);
                 otherPeerThread.start();

@@ -88,14 +88,14 @@ public class peerProcess {
                 for (String peerID : remotePeerDetailsKeys) {
                     RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
 
-                    if (process.peerIndex > remotePeerDetails.getIndex()) {
+      //              if (process.peerIndex > remotePeerDetails.getIndex()) {
                         Thread tempThread = new Thread(new PeerMessageHandler(
                                 remotePeerDetails.getHostAddress(), Integer
                                 .parseInt(remotePeerDetails.getPort()), 1,
                                 currentPeerID));
                         peerThreads.add(tempThread);
                         tempThread.start();
-                    }
+       //             }
                 }
                 startMessageProcessingThread(process);
             }
