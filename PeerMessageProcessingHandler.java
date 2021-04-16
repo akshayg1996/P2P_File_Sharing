@@ -178,7 +178,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                         break;
                     case 15:
                         try {
-                            peerProcess.remotePeerDetailsMap.get(remotePeerID).updatePeerDetails(peerProcess.currentPeerID, 1);
+                            peerProcess.remotePeerDetailsMap.get(peerProcess.currentPeerID).updatePeerDetails(remotePeerID, 1);
                             logAndShowInConsole(remotePeerID + " has downloaded the complete file");
                             int previousState = peerProcess.remotePeerDetailsMap.get(remotePeerID).getPreviousPeerState();
                             peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(previousState);
