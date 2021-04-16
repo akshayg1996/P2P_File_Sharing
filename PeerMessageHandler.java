@@ -186,7 +186,7 @@ public class PeerMessageHandler implements Runnable {
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
                 }
-                if (messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
+                else if (messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     int peerState = peerProcess.remotePeerDetailsMap.get(remotePeerId).getPeerState();
