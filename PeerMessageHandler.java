@@ -170,7 +170,7 @@ public class PeerMessageHandler implements Runnable {
             }
 
             while (true) {
-                int headerBytes = socketInputStream.read(dataBufferWithoutPayload);
+                int headerBytes = socketInputStream != null ? socketInputStream.read(dataBufferWithoutPayload) : -1;
                 if (headerBytes == -1)
                     break;
                 messageLengthInBytes = new byte[MessageConstants.MESSAGE_LENGTH];
