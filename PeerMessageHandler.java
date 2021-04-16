@@ -170,7 +170,7 @@ public class PeerMessageHandler implements Runnable {
             }
 
             while (true) {
-                int headerBytes = socketInputStream != null ? socketInputStream.read(dataBufferWithoutPayload) : -1;
+                int headerBytes = socketInputStream.read(dataBufferWithoutPayload);
                 if (headerBytes == -1)
                     break;
                 messageLengthInBytes = new byte[MessageConstants.MESSAGE_LENGTH];
@@ -218,8 +218,8 @@ public class PeerMessageHandler implements Runnable {
             }
 
         } catch (Exception e) {
-            logAndShowInConsole(ownPeerId + " Error occured while running process - " + e.getMessage());
-            e.printStackTrace();
+           // logAndShowInConsole(ownPeerId + " Error occured while running process - " + e.getMessage());
+           // e.printStackTrace();
         }
     }
 
