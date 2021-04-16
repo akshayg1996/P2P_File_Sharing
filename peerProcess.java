@@ -107,7 +107,7 @@ public class peerProcess {
                 isDownloadComplete = hasDownloadCompleted();
                 if (isDownloadComplete) {
                     logAndShowInConsole("All peers have completed downloading the file.");
-                    /*timerPreferredNeighbors.cancel();
+                    timerPreferredNeighbors.cancel();
                     timerOptimisticUnchokedNeighbors.cancel();
 
                     try {
@@ -139,11 +139,10 @@ public class peerProcess {
 
                     break;
 
-                     */
                 } else {
                     try {
                         Thread.currentThread();
-                        Thread.sleep(2000);
+                        Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         logAndShowInConsole("Error occured while interrupting thread");
                     }
