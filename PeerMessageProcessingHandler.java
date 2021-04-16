@@ -146,7 +146,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                             Set<String> remotePeerDetailsKeys = peerProcess.remotePeerDetailsMap.keySet();
                             for (String key : remotePeerDetailsKeys) {
                                 RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
-                                if (!key.equals(peerDetails.getId()) && hasPeerHandShaked(peerDetails)) {
+                                if (!key.equals(peerProcess.currentPeerID) && hasPeerHandShaked(peerDetails)) {
                                     sendHaveMessage(peerProcess.peerToSocketMap.get(key), key);
                                     peerProcess.remotePeerDetailsMap.get(key).setPeerState(3);
                                 }
@@ -155,7 +155,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                             if(!peerProcess.isFirstPeer && peerProcess.bitFieldMessage.isFileDownloadComplete()) {
                                 for (String key : remotePeerDetailsKeys) {
                                     RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
-                                    if (!key.equals(peerDetails.getId()) && peerDetails.getIsHandShaked() == 1) {
+                                    if (!key.equals(peerProcess.currentPeerID) && peerDetails.getIsHandShaked() == 1) {
                                         sendDownloadCompleteMessage(peerProcess.peerToSocketMap.get(key), key);
                                     }
                                 }
