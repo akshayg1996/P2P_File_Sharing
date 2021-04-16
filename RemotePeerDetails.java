@@ -14,6 +14,7 @@ public class RemotePeerDetails {
     private int hasFile;
     private int index;
     private int peerState = -1;
+    private int previousPeerState = -1;
     private int isPreferredNeighbor = 0;
     private BitFieldMessage bitFieldMessage;
     private int isOptimisticallyUnchockedNeighbor;
@@ -161,6 +162,14 @@ public class RemotePeerDetails {
 
     public void setIsOptimisticallyUnchockedNeighbor(int isOptimisticallyUnchockedNeighbor) {
         this.isOptimisticallyUnchockedNeighbor = isOptimisticallyUnchockedNeighbor;
+    }
+
+    public int getPreviousPeerState() {
+        return previousPeerState;
+    }
+
+    public void setPreviousPeerState(int previousPeerState) {
+        this.previousPeerState = previousPeerState;
     }
 
     public void updatePeerDetails(String currentPeerID, int hasFile) throws IOException {

@@ -16,6 +16,7 @@ public class Message {
         try {
             if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED ||
                     messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
+                    || messageType == MessageConstants.MESSAGE_DOWNLOADED
                    ) {
                 setMessageLength(1);
                 setMessageType(messageType);
@@ -41,7 +42,7 @@ public class Message {
             } else {
                 if (messageType == MessageConstants.MESSAGE_INTERESTED || messageType == MessageConstants.MESSAGE_NOT_INTERESTED
                         || messageType == MessageConstants.MESSAGE_CHOKE || messageType == MessageConstants.MESSAGE_UNCHOKE
-                        ) {
+                        || messageType == MessageConstants.MESSAGE_DOWNLOADED ) {
                     setMessageLength(1);
                     this.payload = null;
                 } else {

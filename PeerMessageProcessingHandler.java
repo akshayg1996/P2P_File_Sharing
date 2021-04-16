@@ -151,6 +151,15 @@ public class PeerMessageProcessingHandler implements Runnable {
                                     peerProcess.remotePeerDetailsMap.get(key).setPeerState(3);
                                 }
                             }
+
+                            if(peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                                for (String key : remotePeerDetailsKeys) {
+                                    RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
+                                    if (!key.equals(peerDetails.getId()) && peerDetails.getIsHandShaked() == 1) {
+                                        sendDownloadCompleteMessage(peerProcess.peerToSocketMap.get(key), key);
+                                    }
+                                }
+                            }
                         }
                         break;
                     case 14:
@@ -167,9 +176,25 @@ public class PeerMessageProcessingHandler implements Runnable {
                             peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(14);
                         }
                         break;
+                    case 15:
+                        try {
+                            peerProcess.remotePeerDetailsMap.get(remotePeerID).updatePeerDetails(peerProcess.currentPeerID, 1);
+                            logAndShowInConsole(remotePeerID + " has downloaded the complete file");
+                            int previousState = peerProcess.remotePeerDetailsMap.get(remotePeerID).getPreviousPeerState();
+                            peerProcess.remotePeerDetailsMap.get(remotePeerID).setPeerState(previousState);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                 }
             }
         }
+    }
+
+    private void sendDownloadCompleteMessage(Socket socket, String peerID) {
+        logAndShowInConsole(currentPeerID + " sending a DOWNLOAD COMPLETE message to Peer " + peerID);
+        Message message = new Message(MessageConstants.MESSAGE_DOWNLOADED);
+        byte[] messageInBytes = Message.convertMessageToByteArray(message);
+        SendMessageToSocket(socket, messageInBytes);
     }
 
     private void sendHaveMessage(Socket socket, String peerID) {

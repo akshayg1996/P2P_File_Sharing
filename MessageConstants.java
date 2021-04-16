@@ -33,6 +33,8 @@ public class MessageConstants {
 
     public static final String MESSAGE_PIECE = "7";
 
+    public static final String MESSAGE_DOWNLOADED = "8";
+
     public static final String HANDSHAKE_HEADER = "P2PFILESHARINGPROJ";
 
     public static final int PIECE_INDEX_LENGTH = 4;
@@ -40,5 +42,4 @@ public class MessageConstants {
     public static final int ACTIVE_CONNECTION = 1;
 
     public static final int PASSIVE_CONNECTION = 0;
-
 }

@@ -8,7 +8,6 @@ import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class peerProcess {
     public Thread serverThread;
@@ -108,7 +107,7 @@ public class peerProcess {
                 isDownloadComplete = hasDownloadCompleted();
                 if (isDownloadComplete) {
                     logAndShowInConsole("All peers have completed downloading the file.");
-                    timerPreferredNeighbors.cancel();
+                    /*timerPreferredNeighbors.cancel();
                     timerOptimisticUnchokedNeighbors.cancel();
 
                     try {
@@ -139,6 +138,8 @@ public class peerProcess {
                     }
 
                     break;
+
+                     */
                 } else {
                     try {
                         Thread.currentThread();

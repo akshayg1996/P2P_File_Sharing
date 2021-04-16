@@ -185,7 +185,16 @@ public class PeerMessageHandler implements Runnable {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
-                } else {
+                }
+                if (messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
+                    messageDetails.setMessage(message);
+                    messageDetails.setFromPeerID(remotePeerId);
+                    int peerState = peerProcess.remotePeerDetailsMap.get(remotePeerId).getPeerState();
+                    peerProcess.remotePeerDetailsMap.get(remotePeerId).setPreviousPeerState(peerState);
+                    peerProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(15);
+                    MessageQueue.addMessageToMessageQueue(messageDetails);
+                }
+                else {
                     int bytesAlreadyRead = 0;
                     int bytesRead;
                     byte[] dataBuffPayload = new byte[message.getMessageLengthAsInteger() - 1];
