@@ -156,7 +156,15 @@ public class PeerMessageProcessingHandler implements Runnable {
                                 for (String key : remotePeerDetailsKeys) {
                                     RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
                                     if (!key.equals(peerProcess.currentPeerID)) {
-                                        sendDownloadCompleteMessage(peerProcess.peerToSocketMap.get(key), key);
+                                        Socket socket = peerProcess.peerToSocketMap.get(key);
+                                        if(socket == null) {
+                                            try {
+                                                socket = new Socket(peerDetails.getHostAddress(), Integer.parseInt(peerDetails.getPort()));
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        sendDownloadCompleteMessage(socket, key);
                                     }
                                 }
                             }
