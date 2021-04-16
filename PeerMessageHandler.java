@@ -17,7 +17,7 @@ public class PeerMessageHandler implements Runnable {
             this.connType = connectionType;
             this.ownPeerId = serverPeerID;
             this.peerSocket = new Socket(address, port);
-            System.out.println("PeerID: "+ ownPeerId  +" Socket created for address: " + address + " port: " + port);
+            logAndShowInConsole(ownPeerId  +" Socket created for address: " + address + " port: " + port);
         } catch (UnknownHostException e) {
             LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + e.getMessage());
         } catch (IOException e) {
