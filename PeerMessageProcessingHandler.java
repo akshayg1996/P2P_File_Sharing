@@ -155,7 +155,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                             if(!peerProcess.isFirstPeer && peerProcess.bitFieldMessage.isFileDownloadComplete()) {
                                 for (String key : remotePeerDetailsKeys) {
                                     RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
-                                    if (!key.equals(peerProcess.currentPeerID) && peerDetails.getIsHandShaked() == 1) {
+                                    if (!key.equals(peerProcess.currentPeerID)) {
                                         sendDownloadCompleteMessage(peerProcess.peerToSocketMap.get(key), key);
                                     }
                                 }
