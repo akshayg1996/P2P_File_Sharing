@@ -14,6 +14,7 @@ public class peerProcess {
     public ServerSocket serverSocket = null;
     public static String currentPeerID;
     public static int peerIndex;
+    public static boolean isFirstPeer = false;
     public static int currentPeerPort;
     public static int currentPeerHasFile;
     public static BitFieldMessage bitFieldMessage = null;
@@ -56,7 +57,6 @@ public class peerProcess {
             //initialize preferred neighbours
             setPreferredNeighbours();
 
-            boolean isFirstPeer = false;
             Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
 
             for (String peerID : remotePeerIDs) {
