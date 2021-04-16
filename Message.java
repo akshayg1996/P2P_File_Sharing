@@ -103,7 +103,7 @@ public class Message {
             int messageType = Integer.parseInt(message.getType());
             if (message.getLengthInBytes().length > MessageConstants.MESSAGE_LENGTH)
                 throw new Exception("Message Length is Invalid.");
-            else if (messageType < 0 || messageType > 7)
+            else if (messageType < 0 || messageType > 8)
                 throw new Exception("Message Type is Invalid.");
             else if (message.getTypeInBytes() == null)
                 throw new Exception("Message Type is Invalid.");
