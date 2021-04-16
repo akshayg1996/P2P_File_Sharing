@@ -84,6 +84,19 @@ public class PeerMessageProcessingHandler implements Runnable {
                         if (messageType.equals(MessageConstants.MESSAGE_REQUEST)) {
                             sendFilePiece(peerProcess.peerToSocketMap.get(remotePeerID), message, remotePeerID);
 
+                            Set<String> remotePeerDetailsKeys = peerProcess.remotePeerDetailsMap.keySet();
+                            if(!peerProcess.isFirstPeer && peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                                for (String key : remotePeerDetailsKeys) {
+                                    RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
+                                    if (!key.equals(peerProcess.currentPeerID)) {
+                                        Socket socket = peerProcess.peerToSocketMap.get(key);
+                                        if(socket != null) {
+                                            sendDownloadCompleteMessage(socket, key);
+                                        }
+                                    }
+                                }
+                            }
+
                             if (isNotPreferredAndUnchokedNeighbour(remotePeerID)) {
                                 sendChokedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
                                 peerProcess.remotePeerDetailsMap.get(remotePeerID).setIsChoked(1);
