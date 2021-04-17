@@ -84,7 +84,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                         if (messageType.equals(MessageConstants.MESSAGE_REQUEST)) {
                             sendFilePiece(peerProcess.peerToSocketMap.get(remotePeerID), message, remotePeerID);
 
-                      /*      Set<String> remotePeerDetailsKeys = peerProcess.remotePeerDetailsMap.keySet();
+                            Set<String> remotePeerDetailsKeys = peerProcess.remotePeerDetailsMap.keySet();
                             if(!peerProcess.isFirstPeer && peerProcess.bitFieldMessage.isFileDownloadComplete()) {
                                 for (String key : remotePeerDetailsKeys) {
                                     RemotePeerDetails peerDetails = peerProcess.remotePeerDetailsMap.get(key);
@@ -95,7 +95,7 @@ public class PeerMessageProcessingHandler implements Runnable {
                                         }
                                     }
                                 }
-                            }*/
+                            }
 
                             if (isNotPreferredAndUnchokedNeighbour(remotePeerID)) {
                                 sendChokedMessage(peerProcess.peerToSocketMap.get(remotePeerID), remotePeerID);
