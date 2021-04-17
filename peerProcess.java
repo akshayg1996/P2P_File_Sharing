@@ -112,7 +112,7 @@ public class peerProcess {
 
                     try {
                         Thread.currentThread();
-                        Thread.sleep(2000);
+                        Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         logAndShowInConsole("Error occured while interrupting thread");
                     }
@@ -142,7 +142,7 @@ public class peerProcess {
                 } else {
                     try {
                         Thread.currentThread();
-                        Thread.sleep(10000);
+                        Thread.sleep(15000);
                     } catch (InterruptedException e) {
                         logAndShowInConsole("Error occured while interrupting thread");
                     }
