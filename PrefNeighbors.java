@@ -16,7 +16,7 @@ public class PrefNeighbors extends TimerTask {
                 if (remotePeerDetails.getIsComplete() == 0 && remotePeerDetails.getIsHandShaked() == 1) {
                     countInterested++;
                 } else if (remotePeerDetails.getIsComplete() == 1) {
-                    peerProcess.remotePeerDetailsMap.remove(key);
+                    peerProcess.preferredNeighboursMap.remove(key);
                 }
             }
         }
