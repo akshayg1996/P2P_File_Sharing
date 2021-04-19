@@ -2,16 +2,16 @@ import java.util.Comparator;
 
 public class DownloadRateSorter implements Comparator<RemotePeerDetails> {
 
-	private boolean constructor1 ;
+	private boolean firstInstanceGreater;
 
 	// Default Constructor
 	public DownloadRateSorter() {
-		this.constructor1 = true;
+		this.firstInstanceGreater = true;
 	}
 
 	// Parameterized Constructor
 	public DownloadRateSorter(boolean constructor) {
-		this.constructor1 = constructor;
+		this.firstInstanceGreater = constructor;
 	}
 	
 	public int compare(RemotePeerDetails rm1, RemotePeerDetails rm2) {
@@ -25,14 +25,14 @@ public class DownloadRateSorter implements Comparator<RemotePeerDetails> {
 			return -1;
 
 		if (rm1 instanceof Comparable) {
-			if (constructor1) {
+			if (firstInstanceGreater) {
 				return rm1.compareTo(rm2);
 			} else {
 				return rm2.compareTo(rm1);
 			}
 		} 
 		else {
-			if (constructor1) {
+			if (firstInstanceGreater) {
 				return rm1.toString().compareTo(rm2.toString());
 			} else {
 				return rm2.toString().compareTo(rm1.toString());

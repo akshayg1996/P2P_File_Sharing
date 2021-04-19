@@ -8,7 +8,9 @@ import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("deprecation")
 public class peerProcess {
     public Thread serverThread;
     public ServerSocket serverSocket = null;
@@ -24,10 +26,10 @@ public class peerProcess {
     public static Vector<Thread> serverThreads = new Vector();
     public static volatile Timer timerPreferredNeighbors;
     public static volatile Timer timerOptimisticUnchokedNeighbors;
-    public static volatile Hashtable<String, RemotePeerDetails> remotePeerDetailsMap = new Hashtable();
-    public static volatile Hashtable<String, RemotePeerDetails> preferredNeighboursMap = new Hashtable();
-    public static volatile Hashtable<String, Socket> peerToSocketMap = new Hashtable();
-    public static volatile Hashtable<String, RemotePeerDetails> optimisticUnchokedNeighbors = new Hashtable();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> remotePeerDetailsMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> preferredNeighboursMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, Socket> peerToSocketMap = new ConcurrentHashMap();
+    public static volatile ConcurrentHashMap<String, RemotePeerDetails> optimisticUnchokedNeighbors = new ConcurrentHashMap();
 
     public Thread getServerThread() {
         return serverThread;
@@ -37,7 +39,6 @@ public class peerProcess {
         this.serverThread = serverThread;
     }
 
-    @SuppressWarnings("deprecation")
     public static void main(String[] args) {
         peerProcess process = new peerProcess();
         currentPeerID = args[0];
@@ -46,108 +47,23 @@ public class peerProcess {
             //initialize logger and show started message in log file and console
             LogHelper logHelper = new LogHelper();
             logHelper.initializeLogger(currentPeerID);
-            LogHelper.logAndShowInConsole(currentPeerID + " is started");
+            logAndShowInConsole(currentPeerID + " is started");
 
-            //read Common.cfg
-            initializePeerConfiguration();
+            initializeConfiguration();
 
-            //read Peerinfo.cfg
-            addOtherPeerDetails();
+            setCurrentPeerDetails();
 
-            //initialize preferred neighbours
-            setPreferredNeighbours();
+            initializeBitFieldMessage();
 
-            Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
+            startMessageProcessingThread(process);
 
-            for (String peerID : remotePeerIDs) {
-                RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
-                if (remotePeerDetails.getId().equals(currentPeerID)) {
-                    process.currentPeerPort = Integer.parseInt(remotePeerDetails.getPort());
-                    process.peerIndex = remotePeerDetails.getIndex();
-                    if (remotePeerDetails.getHasFile() == 1) {
-                        isFirstPeer = true;
-                        currentPeerHasFile = remotePeerDetails.getHasFile();
-                        break;
-                    }
-                }
-            }
-
-            //initialize bit field message
-            bitFieldMessage = new BitFieldMessage();
-            bitFieldMessage.setPieceDetails(currentPeerID, currentPeerHasFile);
-
-            messageProcessor = new Thread(new PeerMessageProcessingHandler(currentPeerID));
-            messageProcessor.start();
-
-            if (isFirstPeer) {
-                startMessageProcessingThread(process);
-            } else {
-                createNewFile();
-
-                Set<String> remotePeerDetailsKeys = remotePeerDetailsMap.keySet();
-                for (String peerID : remotePeerDetailsKeys) {
-                    RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
-
-                    if (process.peerIndex > remotePeerDetails.getIndex()) {
-                          Thread tempThread = new Thread(new PeerMessageHandler(
-                                  remotePeerDetails.getHostAddress(), Integer
-                                  .parseInt(remotePeerDetails.getPort()), 1,
-                                  currentPeerID));
-                          peerThreads.add(tempThread);
-                          tempThread.start();
-                      }
-                }
-                startMessageProcessingThread(process);
-            }
+            startFileServerClientThreads(process);
 
             determinePreferredNeighbors();
+
             determineOptimisticallyUnchockedNeighbours();
 
-            while (true) {
-                isDownloadComplete = hasDownloadCompleted();
-                if (isDownloadComplete) {
-                    logAndShowInConsole("All peers have completed downloading the file.");
-                    timerPreferredNeighbors.cancel();
-                    timerOptimisticUnchokedNeighbors.cancel();
-
-                    try {
-                        Thread.currentThread();
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        logAndShowInConsole("Error occured while interrupting thread");
-                    }
-
-                    if (process.getServerThread().isAlive()) {
-                        process.getServerThread().stop();
-                    }
-
-                    if (messageProcessor.isAlive()) {
-                        messageProcessor.stop();
-                    }
-
-                    for (Thread thread : peerThreads) {
-                        if (thread.isAlive()) {
-                            thread.stop();
-                        }
-                    }
-
-                    for (Thread thread : serverThreads) {
-                        if (thread.isAlive()) {
-                            thread.stop();
-                        }
-                    }
-
-                    break;
-
-                } else {
-                    try {
-                        Thread.currentThread();
-                        Thread.sleep(15000);
-                    } catch (InterruptedException e) {
-                        logAndShowInConsole("Error occured while interrupting thread");
-                    }
-                }
-            }
+            exitProcess(process);
 
         } catch (Exception e) {
             logAndShowInConsole("Error occured while running peer process - " + e.getMessage());
@@ -156,6 +72,131 @@ public class peerProcess {
             logAndShowInConsole(currentPeerID + " Peer process is exiting..");
             System.exit(0);
         }
+    }
+
+    private static void exitProcess(peerProcess process) {
+        while (true) {
+            isDownloadComplete = hasDownloadCompleted();
+            if (isDownloadComplete) {
+                logAndShowInConsole("All peers have completed downloading the file.");
+                timerPreferredNeighbors.cancel();
+                timerOptimisticUnchokedNeighbors.cancel();
+
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    logAndShowInConsole("Error occured while interrupting thread");
+                }
+
+                if (process.getServerThread().isAlive()) {
+                    process.getServerThread().stop();
+                }
+
+                if (messageProcessor.isAlive()) {
+                    messageProcessor.stop();
+                }
+
+                for (Thread thread : peerThreads) {
+                    if (thread.isAlive()) {
+                        thread.stop();
+                    }
+                }
+
+                for (Thread thread : serverThreads) {
+                    if (thread.isAlive()) {
+                        thread.stop();
+                    }
+                }
+
+                break;
+
+            } else {
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(15000);
+                } catch (InterruptedException e) {
+                    logAndShowInConsole("Error occured while interrupting thread");
+                }
+            }
+        }
+    }
+
+    public static void initializeBitFieldMessage() {
+        bitFieldMessage = new BitFieldMessage();
+        bitFieldMessage.setPieceDetails(currentPeerID, currentPeerHasFile);
+    }
+
+    public static void startFileServerClientThreads(peerProcess process) {
+        if (isFirstPeer) {
+            startFileServerThread(process);
+        } else {
+            createNewFile();
+            startFileReceiverThreads(process);
+            startFileServerThread(process);
+        }
+    }
+
+    public static void startFileReceiverThreads(peerProcess process) {
+        Set<String> remotePeerDetailsKeys = remotePeerDetailsMap.keySet();
+        for (String peerID : remotePeerDetailsKeys) {
+            RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
+
+            if (process.peerIndex > remotePeerDetails.getIndex()) {
+                Thread tempThread = new Thread(new PeerMessageHandler(
+                        remotePeerDetails.getHostAddress(), Integer
+                        .parseInt(remotePeerDetails.getPort()), 1,
+                        currentPeerID));
+                peerThreads.add(tempThread);
+                tempThread.start();
+            }
+        }
+    }
+
+    public static void startFileServerThread(peerProcess process) {
+        try {
+            process.serverSocket = new ServerSocket(currentPeerPort);
+            process.serverThread = new Thread(new PeerServerHandler(process.serverSocket, currentPeerID));
+            process.serverThread.start();
+        } catch (SocketTimeoutException e) {
+            logAndShowInConsole(currentPeerID + " Socket Gets Timed out Error - " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
+        } catch (IOException e) {
+            logAndShowInConsole(currentPeerID + " Error Occured while starting server Thread - " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    public static void setCurrentPeerDetails() {
+        Set<String> remotePeerIDs = remotePeerDetailsMap.keySet();
+        for (String peerID : remotePeerIDs) {
+            RemotePeerDetails remotePeerDetails = remotePeerDetailsMap.get(peerID);
+            if (remotePeerDetails.getId().equals(currentPeerID)) {
+                currentPeerPort = Integer.parseInt(remotePeerDetails.getPort());
+                peerIndex = remotePeerDetails.getIndex();
+                if (remotePeerDetails.getHasFile() == 1) {
+                    isFirstPeer = true;
+                    currentPeerHasFile = remotePeerDetails.getHasFile();
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public static void initializeConfiguration() throws Exception {
+
+        //read Common.cfg
+        initializePeerConfiguration();
+
+        //read Peerinfo.cfg
+        addOtherPeerDetails();
+
+        //initialize preferred neighbours
+        setPreferredNeighbours();
+
     }
 
     public static void determinePreferredNeighbors() {
@@ -174,19 +215,8 @@ public class peerProcess {
     }
 
     public static void startMessageProcessingThread(peerProcess process) {
-        try {
-            process.serverSocket = new ServerSocket(currentPeerPort);
-            process.serverThread = new Thread(new PeerServerHandler(process.serverSocket, currentPeerID));
-            process.serverThread.start();
-        } catch (SocketTimeoutException e) {
-            logAndShowInConsole(currentPeerID + " Socket Gets Timed out Error - " + e.getMessage());
-            e.printStackTrace();
-            System.exit(0);
-        } catch (IOException e) {
-            logAndShowInConsole(currentPeerID + " Error Occured while starting server Thread - " + e.getMessage());
-            e.printStackTrace();
-            System.exit(0);
-        }
+        messageProcessor = new Thread(new PeerMessageProcessingHandler(currentPeerID));
+        messageProcessor.start();
     }
 
     public static void createNewFile() {
@@ -296,31 +326,5 @@ public class peerProcess {
         } catch (IOException e) {
             logAndShowInConsole("Error occured while reading peer configuration - " + e.getMessage());
         }
-    }
-
-    public static void sendUnChokeMessage(Socket socket, String remotePeerID) {
-        logAndShowInConsole(currentPeerID + " is sending UNCHOKE message to remote Peer " + remotePeerID);
-        Message d = new Message(MessageConstants.MESSAGE_UNCHOKE);
-        byte[] msgByte = Message.convertMessageToByteArray(d);
-        SendDataStream(socket, msgByte);
-    }
-
-    public static void sendHaveMessage(Socket socket, String remotePeerID) {
-        byte[] encodedBitField = bitFieldMessage.getBytes();
-        logAndShowInConsole(currentPeerID + " sending HAVE message to Peer " + remotePeerID);
-        Message d = new Message(MessageConstants.MESSAGE_HAVE, encodedBitField);
-        SendDataStream(socket, Message.convertMessageToByteArray(d));
-        encodedBitField = null;
-    }
-
-    public static int SendDataStream(Socket socket, byte[] encodedBitField) {
-        try {
-            OutputStream out = socket.getOutputStream();
-            out.write(encodedBitField);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return 1;
     }
 }

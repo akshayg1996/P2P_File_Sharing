@@ -14,31 +14,23 @@ public class PeerMessageHandler implements Runnable {
 
     public PeerMessageHandler(String address, int port, int connectionType, String serverPeerID) {
         try {
-            this.connType = connectionType;
-            this.ownPeerId = serverPeerID;
-            this.peerSocket = new Socket(address, port);
-            logAndShowInConsole(ownPeerId  +" Socket created for address: " + address + " port: " + port);
-        } catch (UnknownHostException e) {
-            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + e.getMessage());
-        } catch (IOException e) {
-            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + e.getMessage());
-        }
-        this.connType = connType;
-
-        try {
+            connType = connectionType;
+            ownPeerId = serverPeerID;
+            peerSocket = new Socket(address, port);
             socketInputStream = peerSocket.getInputStream();
             socketOutputStream = peerSocket.getOutputStream();
-        } catch (Exception ex) {
-            LogHelper.logAndShowInConsole(serverPeerID + " RemotePeerHandler : " + ex.getMessage());
+        } catch (UnknownHostException e) {
+            LogHelper.logAndShowInConsole(serverPeerID + " Error occured " + e.getMessage());
+        } catch (IOException e) {
+            LogHelper.logAndShowInConsole(serverPeerID + " Error occured " + e.getMessage());
         }
     }
 
     public PeerMessageHandler(Socket socket, int connectionType, String serverPeerID) {
-        peerSocket = socket;
-        connType = connectionType;
-        ownPeerId = serverPeerID;
-
         try {
+            peerSocket = socket;
+            connType = connectionType;
+            ownPeerId = serverPeerID;
             socketInputStream = peerSocket.getInputStream();
             socketOutputStream = peerSocket.getOutputStream();
         } catch (IOException e) {
@@ -129,8 +121,7 @@ public class PeerMessageHandler implements Runnable {
                         //populate peerID to socket mapping
                         peerProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
                         break;
-                    } else
-                        continue;
+                    }
                 }
 
                 // Sending BitField...
@@ -154,13 +145,10 @@ public class PeerMessageHandler implements Runnable {
                         //populate peerID to socket mapping
                         peerProcess.peerToSocketMap.put(remotePeerId, this.peerSocket);
                         break;
-                    } else {
-                        continue;
                     }
                 }
                 if (handShakeMessageSent()) {
                     logAndShowInConsole(ownPeerId + " HANDSHAKE message has been sent successfully.");
-
                 } else {
                     logAndShowInConsole(ownPeerId + " HANDSHAKE message sending failed.");
                     System.exit(0);
@@ -186,16 +174,14 @@ public class PeerMessageHandler implements Runnable {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
-                }
-                else if (messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
+                } else if (messageType.equals(MessageConstants.MESSAGE_DOWNLOADED)) {
                     messageDetails.setMessage(message);
                     messageDetails.setFromPeerID(remotePeerId);
                     int peerState = peerProcess.remotePeerDetailsMap.get(remotePeerId).getPeerState();
                     peerProcess.remotePeerDetailsMap.get(remotePeerId).setPreviousPeerState(peerState);
                     peerProcess.remotePeerDetailsMap.get(remotePeerId).setPeerState(15);
                     MessageQueue.addMessageToMessageQueue(messageDetails);
-                }
-                else {
+                } else {
                     int bytesAlreadyRead = 0;
                     int bytesRead;
                     byte[] dataBuffPayload = new byte[message.getMessageLengthAsInteger() - 1];
@@ -218,8 +204,7 @@ public class PeerMessageHandler implements Runnable {
             }
 
         } catch (Exception e) {
-           // logAndShowInConsole(ownPeerId + " Error occured while running process - " + e.getMessage());
-           // e.printStackTrace();
+
         }
     }
 
