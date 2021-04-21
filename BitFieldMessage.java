@@ -2,15 +2,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+/**
+ * This class is used to store bitfield message of peers
+ */
 public class BitFieldMessage {
 
+    //List of file pieces
     private FilePiece[] filePieces;
+    //number of file pieces
     private int numberOfPieces;
 
+    /**
+     * This is a constructor to initialize bitfield message. It sets file size and file pieces according to values provided in configuration
+     */
     public BitFieldMessage() {
         Double fileSize = Double.parseDouble(String.valueOf(CommonConfiguration.fileSize));
         Double pieceSize = Double.parseDouble(String.valueOf(CommonConfiguration.pieceSize));
-        numberOfPieces = (int) Math.ceil((double)fileSize / (double)pieceSize);
+        numberOfPieces = (int) Math.ceil((double) fileSize / (double) pieceSize);
         filePieces = new FilePiece[numberOfPieces];
 
         for (int i = 0; i < numberOfPieces; i++) {
@@ -18,22 +26,45 @@ public class BitFieldMessage {
         }
     }
 
+    /**
+     * This method is used to return the list of file pieces
+     * @return filepieces - list of file pieces
+     */
     public FilePiece[] getFilePieces() {
         return filePieces;
     }
 
+    /**
+     * This method is used to set the list of file pieces
+     * @param filePieces - list of file pieces
+     */
     public void setFilePieces(FilePiece[] filePieces) {
         this.filePieces = filePieces;
     }
 
+    /**
+     * This method is used to get the number of file pieces
+     * @return numberOfPieces - number of file pieces
+     */
     public int getNumberOfPieces() {
         return numberOfPieces;
     }
 
+    /**
+     * This method is used to set the number of file pieces
+     * @param numberOfPieces - number of file pieces
+     */
     public void setNumberOfPieces(int numberOfPieces) {
         this.numberOfPieces = numberOfPieces;
     }
 
+    /**
+     * This method is used to set if pieces are present of that file or not.
+     * It accepts peerID which is set for a particular file piece and hasfile whether the file is present or not.
+     * Used for initializing a bitfield message
+     * @param peerId - ID of the peer from where the piece is found
+     * @param hasFile - whether the file is present or not
+     */
     public void setPieceDetails(String peerId, int hasFile) {
         for (FilePiece filePiece : filePieces) {
             filePiece.setIsPresent(hasFile == 1 ? 1 : 0);
@@ -41,6 +72,10 @@ public class BitFieldMessage {
         }
     }
 
+    /**
+     * This method is used to convert bitfield message to byte array.
+     * @return bitfield message converted into byte array
+     */
     public byte[] getBytes() {
         int s = numberOfPieces / 8;
         if (numberOfPieces % 8 != 0)
@@ -72,6 +107,11 @@ public class BitFieldMessage {
         return iP;
     }
 
+    /**
+     * This method is used to convert a byte array to bitfield message
+     * @param bitField - bitfield message in byte array
+     * @return - bitfield message object
+     */
     public static BitFieldMessage decodeMessage(byte[] bitField) {
         BitFieldMessage bitFieldMessage = new BitFieldMessage();
         for (int i = 0; i < bitField.length; i++) {
@@ -91,6 +131,10 @@ public class BitFieldMessage {
         return bitFieldMessage;
     }
 
+    /**
+     * This method is used to get number of file pieces present in a peer
+     * @return number of file pieces present
+     */
     public int getNumberOfPiecesPresent() {
         int count = 0;
         for (FilePiece filePiece : filePieces) {
@@ -102,6 +146,10 @@ public class BitFieldMessage {
         return count;
     }
 
+    /**
+     * This method is used to check if all the pieces of a file have been downloaded
+     * @return true - file has been downloaded; false - file has not been downloaded
+     */
     public boolean isFileDownloadComplete() {
         boolean isFileDownloaded = true;
         for (FilePiece filePiece : filePieces) {
@@ -114,22 +162,31 @@ public class BitFieldMessage {
         return isFileDownloaded;
     }
 
-    public synchronized boolean containsInterestingPieces(BitFieldMessage bitFieldMessage) {
+    /**
+     * This method returns the index of first piece which is present in remote peer and not in current peer
+     * @param bitFieldMessage - bitfield of remote peer
+     * @return index of first piece which is present in remote peer and not in current peer
+     */
+    public synchronized int getInterestingPieceIndex(BitFieldMessage bitFieldMessage) {
         int numberOfPieces = bitFieldMessage.getNumberOfPieces();
-        boolean hasInterestingPieces = false;
+        int interestingPiece = -1;
 
         for (int i = 0; i < numberOfPieces; i++) {
             if (bitFieldMessage.getFilePieces()[i].getIsPresent() == 1
                     && this.getFilePieces()[i].getIsPresent() == 0) {
-                hasInterestingPieces = true;
+                interestingPiece = i;
                 break;
-            } else
-                continue;
+            }
         }
 
-        return hasInterestingPieces;
+        return interestingPiece;
     }
 
+    /**
+     * This method returns the index of first piece which is present in remote peer and not in current peer
+     * @param bitFieldMessage - bitfield of remote peer
+     * @return index of first piece which is present in remote peer and not in current peer
+     */
     public synchronized int getFirstDifferentPieceIndex(BitFieldMessage bitFieldMessage) {
         int firstPieces = numberOfPieces;
         int secondPieces = bitFieldMessage.getNumberOfPieces();
@@ -154,11 +211,17 @@ public class BitFieldMessage {
         return pieceIndex;
     }
 
+    /**
+     * This method is used to update current peer bitfield with file piece.
+     * If complete file is downloaded it updates peerinfo.cfg to set hasfile value of current peer to 1
+     * @param peerID - The peer from where the piece is received
+     * @param filePiece - The file piece received
+     */
     public void updateBitFieldInformation(String peerID, FilePiece filePiece) {
         int pieceIndex = filePiece.getPieceIndex();
         try {
             if (isPieceAlreadyPresent(pieceIndex)) {
-                logAndShowInConsole(peerID + " Piece already received!!");
+                logAndShowInConsole(peerID + " Piece already received");
             } else {
                 String fileName = CommonConfiguration.fileName;
 
@@ -177,6 +240,7 @@ public class BitFieldMessage {
                         + peerProcess.bitFieldMessage.getNumberOfPiecesPresent());
 
                 if (peerProcess.bitFieldMessage.isFileDownloadComplete()) {
+                    //update file download details
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsInterested(0);
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsComplete(1);
                     peerProcess.remotePeerDetailsMap.get(peerID).setIsChoked(0);
@@ -190,10 +254,19 @@ public class BitFieldMessage {
         }
     }
 
+    /**
+     * This method is used to check if a piece is already present.
+     * @param pieceIndex - index of the piece to be checked
+     * @return true - piece is present; false - piece is not present
+     */
     private boolean isPieceAlreadyPresent(int pieceIndex) {
         return peerProcess.bitFieldMessage.getFilePieces()[pieceIndex].getIsPresent() == 1;
     }
 
+    /**
+     * This method is used to log a message in a log file and show it in console
+     * @param message - message to be logged and showed in console
+     */
     private static void logAndShowInConsole(String message) {
         LogHelper.logAndShowInConsole(message);
     }
